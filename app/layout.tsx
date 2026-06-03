@@ -11,6 +11,10 @@ const jetbrainsMono = JetBrains_Mono({
 export const metadata: Metadata = {
   title: "Lucas Sim — Senior Software Engineer",
   description: "Full-stack engineer with 7+ years across fintech, edtech, and e-commerce. Strong in Go, Laravel, and AI-accelerated development.",
+  icons: {
+    icon: "/icon.png",
+    apple: "/icon.png",
+  },
 };
 
 export default function RootLayout({
