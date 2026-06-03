@@ -57,6 +57,18 @@ export const EXPERIENCE = [
   },
 ];
 
+export const PROJECTS = [
+  {
+    slug: "webhook-playground",
+    title: "WebSocket Transaction Visualizer",
+    description:
+      "Makes the hidden pipeline of a bank transfer visible. Trigger each step — balance check, limit check, receiver verification, fund transfer, confirmation — and watch the result animate in real time via WebSocket events.",
+    tags: ["Go", "Encore", "Next.js", "WebSocket", "PostgreSQL"],
+    repoUrl: "https://github.com/lucassimzq/webhook-playground",
+    demoUrl: "https://webhook-playground.lucascodes.dev",
+  },
+];
+
 export const ACCENT_OPTIONS = ["#4ade80", "#fbbf24", "#22d3ee", "#818cf8"];
 
 export const LINKS = {
