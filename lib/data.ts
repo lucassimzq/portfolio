@@ -59,6 +59,15 @@ export const EXPERIENCE = [
 
 export const PROJECTS = [
   {
+    slug: "rag-playground",
+    title: "RAG Playground — Visualizing Semantic Search",
+    description:
+      "Makes the RAG pipeline visible end to end. Type a natural language recruiter query, watch it get embedded into a vector, run semantic search against 50 candidate profiles via pgvector, and see the LLM stream back a grounded recommendation in real time.",
+    tags: ["Go", "Encore", "Next.js", "pgvector", "Gemini"],
+    repoUrl: "https://github.com/lucassimzq/rag-playground",
+    demoUrl: "https://rag-playground.lucascodes.dev",
+  },
+  {
     slug: "webhook-playground",
     title: "WebSocket Transaction Visualizer",
     description:
