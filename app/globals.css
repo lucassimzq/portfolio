@@ -230,15 +230,15 @@ em { font-style: italic; }
 
   /* the open-to-work badge: a dot that breathes beside one line */
   .badge {
-    display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 11px 0 9px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px 0 11px; border-radius: 999px;
     background: #fff; box-shadow: var(--card); font-size: 12.5px; color: var(--text-2);
   }
   .badge-dot { position: relative; width: 6px; height: 6px; border-radius: 50%; background: var(--text-1); }
   .badge-dot::after {
-    content: ""; position: absolute; inset: -4px; border-radius: 50%; box-shadow: 0 0 0 1px var(--text-1);
+    content: ""; position: absolute; inset: -3px; border-radius: 50%; box-shadow: 0 0 0 1px var(--text-1);
     animation: ping 2.4s var(--ease-out) infinite;
   }
-  @keyframes ping { 0% { transform: scale(0.4); opacity: 0.5; } 70%, 100% { transform: scale(1.4); opacity: 0; } }
+  @keyframes ping { 0% { transform: scale(0.5); opacity: 0.45; } 70%, 100% { transform: scale(1.15); opacity: 0; } }
 
   /* ── The hero drawing (components/hero/Assembly.tsx) ───────────── */
   .assembly { width: 100%; max-width: 760px; aspect-ratio: 760 / 400; margin: 0 auto; }
