@@ -90,6 +90,17 @@ function ProjectCard({
                   Live demo <ArrowUpRight className="btn-icon-x" size={16} />
                 </a>
               )}
+              {p.siteUrl && (
+                <a
+                  href={p.siteUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={`btn btn-sm ${p.caseStudy ? "btn-ghost" : "btn-primary"}`}
+                  aria-label={`${p.title} website (opens in a new tab)`}
+                >
+                  Website <ArrowUpRight className="btn-icon-x" size={16} />
+                </a>
+              )}
               {p.repoUrl && (
                 <a
                   href={p.repoUrl}
