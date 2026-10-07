@@ -126,10 +126,10 @@ export default function Snapshots({ className = "" }: { className?: string }) {
       </div>
 
       <figcaption className="mt-7 flex items-center gap-4 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">
-        <span className="tabular-nums">
+        <span className="whitespace-nowrap tabular-nums">
           <span className="text-ink-2">{String(top + 1).padStart(2, "0")}</span> / {String(n).padStart(2, "0")}
         </span>
-        <span className="h-px w-8 bg-line-strong" />
+        <span className="hidden h-px w-8 bg-line-strong sm:block" />
         <button
           type="button"
           onClick={next}

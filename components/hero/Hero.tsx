@@ -4,8 +4,9 @@ import { useEffect, useRef, useState, type CSSProperties } from "react";
 import { useInView, useReducedMotion } from "motion/react";
 import SystemMesh, { FLOWS, type Flow } from "./SystemMesh";
 import Magnetic from "@/components/ui/Magnetic";
+import Counter from "@/components/ui/Counter";
 import { ArrowDown, Download } from "@/components/ui/Icons";
-import { useZonedTime } from "@/components/ui/hooks";
+import { useActive, useZonedTime } from "@/components/ui/hooks";
 import OrgLogo from "@/components/site/OrgLogo";
 import { LINKS, ORGS, PROFILE, PROOF, type OrgId } from "@/lib/data";
 
@@ -25,6 +26,7 @@ export default function Hero() {
   const [flow, setFlow] = useState<Flow>("pay");
   const [pinned, setPinned] = useState(0);
   const { time } = useZonedTime(PROFILE.timezone);
+  const [proofRef, proofOn] = useActive<HTMLUListElement>(0.6);
 
   // Cycle through the stories; a hover pins one for a while.
   useEffect(() => {
@@ -101,17 +103,15 @@ export default function Hero() {
             })}
           </h1>
 
-          <p className="fade-rise mt-8 max-w-[36rem] text-[17px] leading-relaxed text-ink-2 sm:text-[19px]" style={delay(0.55)}>
-            <strong className="font-medium text-ink">Lucas Sim</strong>, backend engineer. {PROFILE.years} years
-            shipping production systems across fintech, SaaS and AI platforms. Currently{" "}
-            <span className="text-ink">{PROFILE.current.role}</span> at{" "}
-            <span className="text-ink">{PROFILE.current.company}</span>, Kuala Lumpur.
+          <p className="fade-rise mt-8 text-[17px] text-ink-2 sm:text-[19px]" style={delay(0.55)}>
+            <strong className="font-medium text-ink">Lucas Sim</strong>, backend engineer, {PROFILE.years} years. Now at{" "}
+            <span className="text-ink">{PROFILE.current.company}</span>.
           </p>
 
           <div className="fade-rise mt-10 flex flex-wrap items-center gap-3" style={delay(0.7)}>
             <Magnetic>
               <a href="#impact" className="btn btn-primary">
-                See the impact <ArrowDown className="btn-icon" />
+                See the proof <ArrowDown className="btn-icon" />
               </a>
             </Magnetic>
             <Magnetic>
@@ -130,14 +130,15 @@ export default function Hero() {
       <div className="shell relative">
         <div className="fade-rise mt-16 border-t border-line md:mt-20" style={delay(0.95)}>
           {/* The three numbers to leave with. */}
-          <ul className="grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+          <ul ref={proofRef} className="grid grid-cols-3 divide-x divide-line">
             {PROOF.map((p) => (
-              <li key={p.label} className="py-6 sm:px-6 sm:py-8 sm:first:pl-0 sm:last:pr-0 lg:px-10">
-                <div className="text-[clamp(46px,5vw,76px)] font-medium leading-[0.9] tracking-[-0.055em] text-ink [font-stretch:84%]">
-                  {p.value}
+              <li key={p.label} className="px-3 py-6 first:pl-0 last:pr-0 sm:px-6 sm:py-8 lg:px-10">
+                <div className="text-[clamp(34px,5vw,76px)] font-medium leading-[0.9] tracking-[-0.055em] text-ink [font-stretch:84%]">
+                  {p.prefix && <span className="text-ink-3">{p.prefix}</span>}
+                  {p.text ?? <Counter to={p.to} duration={1.6} play={proofOn} ease="easeOut" />}
+                  {p.suffix && <span className="text-accent">{p.suffix}</span>}
                 </div>
-                <div className="mt-3 text-[15.5px] leading-snug text-ink">{p.label}</div>
-                <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">{p.detail}</div>
+                <div className="mt-3 text-[13px] leading-snug text-ink-2 sm:text-[15.5px]">{p.label}</div>
               </li>
             ))}
           </ul>

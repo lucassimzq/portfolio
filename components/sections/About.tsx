@@ -1,17 +1,14 @@
 "use client";
 
-import { useRef } from "react";
+import { useId, useRef } from "react";
 import Image from "next/image";
 import { m, useScroll, useTransform, type MotionValue } from "motion/react";
 import Reveal from "@/components/ui/Reveal";
-import Counter from "@/components/ui/Counter";
 import Snapshots from "@/components/site/Snapshots";
-import { useActive } from "@/components/ui/hooks";
-import { EDUCATION } from "@/lib/data";
 import avatar from "@/assets/me/avatar.webp";
 
 const STORY =
-  "I'm Lucas, a backend engineer with *8+ years* in production. I've built Go microservices for a *digital bank,* led a 0‑to‑1 Laravel platform with a team of five to six, and now build *MCP tooling* and agent guardrails at YTL AI Labs. I like the parts nobody sees: race conditions, query plans, hash slots, and the CI/CD that keeps releases boring. Next chapter: *Australia or New Zealand.*";
+  "I'm Lucas. *Eight years* of backends: a *digital bank,* a 0‑to‑1 SaaS I led, and now *MCP tooling* at YTL AI Labs. I like the parts nobody sees. Next chapter: *Australia or New Zealand.*";
 
 const WORDS = (() => {
   const out: { w: string; accent: boolean }[] = [];
@@ -37,94 +34,76 @@ function Word({ w, accent, progress, range }: { w: string; accent: boolean; prog
   );
 }
 
-const FACTS: { to?: number; text?: string; suffix?: string; label: string }[] = [
-  { to: 8, suffix: "+", label: "years shipping production systems" },
-  { to: 3, label: "industries: fintech, SaaS, AI platforms" },
-  { text: "5–6", label: "people led and mentored as Lead Developer" },
-];
-
 export default function About() {
   const textRef = useRef<HTMLParagraphElement>(null);
   const sectionRef = useRef<HTMLElement>(null);
-  const { scrollYProgress } = useScroll({ target: textRef, offset: ["start 0.85", "end 0.5"] });
+  const { scrollYProgress } = useScroll({ target: textRef, offset: ["start 0.85", "end 0.55"] });
   const { scrollYProgress: ringProgress } = useScroll({ target: sectionRef, offset: ["start end", "end start"] });
   const rotate = useTransform(ringProgress, [0, 1], [-90, 200]);
-  const [factsRef, factsActive] = useActive<HTMLDivElement>(0.5);
 
   return (
-    <section ref={sectionRef} id="about" className="relative py-24 md:py-32">
-      <div className="shell grid gap-14 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:gap-x-10">
-        <div className="lg:col-span-4">
+    <section ref={sectionRef} id="about" className="relative pb-8 pt-20 md:pb-10 md:pt-28">
+      <div className="shell grid items-center gap-10 lg:grid-cols-12 lg:gap-10">
+        <div className="lg:col-span-3">
           <Reveal y={12} className="eyebrow flex items-center gap-3">
             <span className="text-accent">01</span>
             <span className="h-px w-10 bg-line-strong" />
             About
           </Reveal>
-
-          <Reveal delay={0.1} className="relative mt-10 aspect-square w-[min(280px,70vw)]">
-            <m.svg viewBox="0 0 300 300" className="absolute inset-0 h-full w-full" style={{ rotate }} aria-hidden>
-              <defs>
-                <path id="ring" d="M150,150 m-132,0 a132,132 0 1,1 264,0 a132,132 0 1,1 -264,0" />
-              </defs>
-              <text className="font-mono" fontSize="12.5" fill="var(--text-3)" letterSpacing="4">
-                <textPath href="#ring" textLength="826" lengthAdjust="spacing">
-                  BACKEND ENGINEER ✳ 8+ YEARS ✳ KUALA LUMPUR ✳ OPEN TO AU / NZ ✳
-                </textPath>
-              </text>
-            </m.svg>
-            <div className="absolute inset-[15%] overflow-hidden rounded-full ring-1 ring-line-strong">
-              <Image
-                src={avatar}
-                alt="Illustration of Lucas in headphones, sipping from a mug with a code icon on it"
-                fill
-                sizes="(max-width: 1024px) 50vw, 200px"
-                className="object-cover transition-transform duration-700 ease-expo hover:scale-105"
-              />
-            </div>
+          <Reveal delay={0.1} className="mt-8 hidden lg:block">
+            <Ring rotate={rotate} className="w-[min(240px,100%)]" />
           </Reveal>
         </div>
 
-        <div className="lg:col-span-8 lg:row-span-2">
-          <p
-            ref={textRef}
-            className="text-[clamp(26px,3.3vw,48px)] font-medium leading-[1.18] tracking-[-0.03em] text-ink"
-          >
-            {WORDS.map((t, i) => (
-              <Word
-                key={i}
-                w={t.w}
-                accent={t.accent}
-                progress={scrollYProgress}
-                range={[i / WORDS.length, Math.min(1, (i + 3) / WORDS.length)]}
-              />
-            ))}
-          </p>
+        <p
+          ref={textRef}
+          className="text-[clamp(28px,3.4vw,50px)] font-medium leading-[1.14] tracking-[-0.03em] text-ink lg:col-span-6"
+        >
+          {WORDS.map((t, i) => (
+            <Word
+              key={i}
+              w={t.w}
+              accent={t.accent}
+              progress={scrollYProgress}
+              range={[i / WORDS.length, Math.min(1, (i + 3) / WORDS.length)]}
+            />
+          ))}
+        </p>
 
-          <div ref={factsRef} className="mt-16 grid gap-8 border-t border-line pt-10 sm:grid-cols-3">
-            {FACTS.map((f, i) => (
-              <Reveal key={f.label} delay={i * 0.08}>
-                <div className="text-[clamp(44px,5vw,72px)] font-medium leading-none tracking-[-0.05em] text-ink [font-stretch:85%]">
-                  {f.to !== undefined ? <Counter to={f.to} duration={1.4} play={factsActive} ease="easeOut" /> : f.text}
-                  {f.suffix && <span className="text-accent">{f.suffix}</span>}
-                </div>
-                <p className="mt-3 max-w-[16rem] text-[14.5px] leading-snug text-ink-2">{f.label}</p>
-              </Reveal>
-            ))}
-          </div>
-
-          <Reveal className="mt-12 flex flex-col gap-3 font-mono text-[12px] uppercase tracking-[0.12em] text-ink-3 sm:flex-row sm:gap-8">
-            {EDUCATION.map((e) => (
-              <span key={e.degree}>
-                <span className="text-ink-2">{e.degree}</span> · {e.school} · {e.year}
-              </span>
-            ))}
-          </Reveal>
-        </div>
-
-        <Reveal delay={0.1} className="mt-4 lg:col-span-4 lg:row-start-2 lg:mt-0">
-          <Snapshots className="ml-3 w-[min(270px,66vw)] pt-12" />
+        {/* Phones: avatar and the photo pile side by side under the text. */}
+        <Reveal className="flex items-start justify-between gap-4 lg:col-span-3 lg:block">
+          <Ring rotate={rotate} className="w-[44vw] max-w-[220px] shrink-0 lg:hidden" />
+          <Snapshots className="w-[42vw] max-w-[220px] pt-3 lg:ml-auto lg:w-[min(250px,100%)] lg:max-w-none lg:pt-0" />
         </Reveal>
       </div>
     </section>
+  );
+}
+
+/** The avatar inside a ring of text that turns with the page. */
+function Ring({ rotate, className }: { rotate: MotionValue<number>; className: string }) {
+  const id = useId();
+  return (
+    <div className={`relative aspect-square ${className}`}>
+      <m.svg viewBox="0 0 300 300" className="absolute inset-0 h-full w-full" style={{ rotate }} aria-hidden>
+        <defs>
+          <path id={id} d="M150,150 m-132,0 a132,132 0 1,1 264,0 a132,132 0 1,1 -264,0" />
+        </defs>
+        <text className="font-mono" fontSize="12.5" fill="var(--text-3)" letterSpacing="4">
+          <textPath href={`#${id}`} textLength="826" lengthAdjust="spacing">
+            BACKEND ENGINEER ✳ 8+ YEARS ✳ KUALA LUMPUR ✳ OPEN TO AU / NZ ✳
+          </textPath>
+        </text>
+      </m.svg>
+      <div className="absolute inset-[15%] overflow-hidden rounded-full ring-1 ring-line-strong">
+        <Image
+          src={avatar}
+          alt="Illustration of Lucas in headphones, sipping from a mug with a code icon on it"
+          fill
+          sizes="(max-width: 1024px) 44vw, 170px"
+          className="object-cover transition-transform duration-700 ease-expo hover:scale-105"
+        />
+      </div>
+    </div>
   );
 }

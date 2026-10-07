@@ -478,3 +478,8 @@ html { scroll-padding-top: 76px; }
 }
 .article-body strong { color: var(--text-1); font-weight: 500; }
 .article-body em { color: var(--text-1); }
+
+/* ── v2: reels that start at the shell's left edge ──────────── */
+.track-pad { padding-inline: max(16px, calc((100vw - 1320px) / 2 + 16px)); }
+@media (min-width: 640px) { .track-pad { padding-inline: max(28px, calc((100vw - 1320px) / 2 + 28px)); } }
+@media (min-width: 1024px) { .track-pad { padding-inline: max(40px, calc((100vw - 1320px) / 2 + 40px)); } }

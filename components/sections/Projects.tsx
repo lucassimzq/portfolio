@@ -41,21 +41,21 @@ function ProjectCard({
       <m.article
         onPointerMove={spotlight}
         style={stacked ? { scale, top: index * 28 } : undefined}
-        className="spotlight relative w-full origin-top overflow-hidden rounded-[28px] border border-line bg-card lg:h-[min(640px,calc(100vh-150px))]"
+        className="spotlight relative w-full origin-top overflow-hidden rounded-[28px] border border-line bg-card lg:h-[min(530px,calc(100vh-150px))]"
       >
         <div className="grid h-full grid-cols-1 lg:grid-cols-12">
-          <div className="flex flex-col p-7 sm:p-10 lg:col-span-5">
+          <div className="flex flex-col p-7 sm:p-10 lg:col-span-5 lg:justify-center">
             <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">
               <span className="text-accent">P/{String(index + 1).padStart(2, "0")}</span>
               <span className="h-px w-6 bg-line-strong" />
               {p.kicker}
             </div>
-            <h3 className="mt-6 text-[clamp(34px,3.7vw,58px)] font-medium leading-[0.98] tracking-[-0.045em] text-ink [font-stretch:88%]">
+            <h3 className="mt-5 text-[clamp(34px,3.7vw,58px)] font-medium leading-[0.98] tracking-[-0.045em] text-ink [font-stretch:88%]">
               {p.title}
             </h3>
-            <p className="mt-5 max-w-[34rem] text-[15.5px] leading-relaxed text-ink-2">{p.description}</p>
-            {p.note && <p className="mt-2.5 text-[12.5px] text-ink-3">{p.note}</p>}
-            <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
+            <p className="mt-4 max-w-[30rem] text-[16px] leading-relaxed text-ink-2">{p.blurb}</p>
+            {p.note && <p className="mt-2 text-[12.5px] text-ink-3">{p.note}</p>}
+            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Built with">
               {p.tags.map((t) => (
                 <li
                   key={t}
@@ -65,15 +65,7 @@ function ProjectCard({
                 </li>
               ))}
             </ul>
-            <ol className="mt-8 flex flex-wrap items-center gap-x-2 gap-y-2 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-2" aria-label="How it works">
-              {p.flow.map((step, s) => (
-                <li key={step} className="flex items-center gap-2">
-                  {s > 0 && <span className="text-accent" aria-hidden>→</span>}
-                  {step}
-                </li>
-              ))}
-            </ol>
-            <div className="mt-auto flex flex-wrap items-center gap-3 pt-9">
+            <div className="flex flex-wrap items-center gap-3 pt-8">
               {p.caseStudy && (
                 <Link href={p.caseStudy} className="btn btn-sm btn-primary">
                   Read the case study <ArrowUpRight className="btn-icon-x" size={16} />
@@ -85,9 +77,9 @@ function ProjectCard({
                   target="_blank"
                   rel="noopener noreferrer"
                   className="btn btn-sm btn-ghost"
-                  aria-label={`${p.title} live demo (opens in a new tab)`}
+                  aria-label={`${p.title} ${(p.demoLabel ?? "live demo").toLowerCase()} (opens in a new tab)`}
                 >
-                  Live demo <ArrowUpRight className="btn-icon-x" size={16} />
+                  {p.demoLabel ?? "Live demo"} <ArrowUpRight className="btn-icon-x" size={16} />
                 </a>
               )}
               {p.repoUrl && (
@@ -132,13 +124,12 @@ export default function Projects() {
   const { scrollYProgress } = useScroll({ target: stackRef, offset: ["start start", "end end"] });
 
   return (
-    <section id="projects" className="relative pt-24 md:pt-32 lg:pb-16">
+    <section id="projects" className="relative pt-20 md:pt-28 lg:pb-16">
       <div className="shell">
         <SectionHeading
           index="04"
           label="Projects"
           title="Making the invisible *visible.*"
-          intro="Side projects that make hidden things visible: query round trips, a RAG pipeline, money moving, and your Claude Code limits. Each preview is a live animation of what the real thing does."
         />
         <div ref={stackRef} className="relative flex flex-col gap-6 lg:gap-0">
           {PROJECTS.map((p, i) => (
