@@ -24,7 +24,7 @@ const NODES: Record<string, NodeDef> = {
   identity: { x: 180, y: 60, label: "identity · sso", flows: ["pay"], fact: "A centralised Identity Server and auth package, with QR-based login across products.", where: "qBayar" },
   onboard: { x: 322, y: 170, label: "onboarding", flows: ["pay"], fact: "A critical race condition in the onboarding flow, resolved with Redis-based mutex locking.", where: "GXBank" },
   redis: { x: 458, y: 170, label: "redis · mutex", flows: ["pay"], fact: "Hash slot distribution optimised to reduce hotspotting as traffic grew.", where: "GXBank" },
-  ledger: { x: 584, y: 170, label: "ledger", flows: ["pay"], fact: "Money movement that stays correct under concurrent updates, where financial state must stay consistent.", where: "Contract · casino platform" },
+  ledger: { x: 584, y: 170, label: "ledger", flows: ["pay"], fact: "Money movement that stays correct under concurrent updates, where financial state must stay consistent.", where: "Contract work" },
   portal: { x: 322, y: 290, label: "ops-portal", flows: ["query", "agent"], fact: "Heavy platform queries cut from around 2 minutes to under 10 seconds.", where: "YTL AI Labs" },
   postgres: { x: 584, y: 290, label: "postgres", flows: ["pay", "query"], fact: "A 20 million row table migrated with zero external downtime.", where: "YTL AI Labs" },
   agent: { x: 56, y: 410, label: "ai-agent", flows: ["agent"], fact: "Teammates pull data and run approved actions through an agent instead of only using the UI.", where: "YTL AI Labs" },

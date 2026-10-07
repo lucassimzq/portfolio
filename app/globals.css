@@ -455,6 +455,14 @@ html { scroll-padding-top: 76px; }
 
 .step-progress { width: 100%; transform-origin: left; animation: step-progress linear both; }
 @keyframes step-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.grow-x { animation-name: step-progress; animation-timing-function: linear; animation-fill-mode: both; }
+
+.crab-hop { display: inline-block; animation: crab-hop 0.5s var(--ease-expo) both; }
+@keyframes crab-hop {
+  0% { transform: translateY(0); }
+  35% { transform: translateY(-4px); }
+  100% { transform: translateY(0); }
+}
 
 /* ── Case studies ───────────────────────────────────────────── */
 .article-body { counter-reset: section; }

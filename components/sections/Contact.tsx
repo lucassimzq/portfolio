@@ -7,6 +7,7 @@ import Magnetic from "@/components/ui/Magnetic";
 import RelocationMap from "@/components/contact/RelocationMap";
 import { ArrowUpRight, Check, Copy, Download, Github, Linkedin } from "@/components/ui/Icons";
 import { useActive, useZonedTime } from "@/components/ui/hooks";
+import { useEmail } from "@/components/site/Email";
 import { LINKS, PROFILE } from "@/lib/data";
 import { CITIES, HOME } from "@/lib/map";
 
@@ -27,7 +28,7 @@ function Clock({ city, timeZone }: { city: string; timeZone: string }) {
   );
 }
 
-function CopyEmail() {
+function CopyEmail({ email }: { email: string }) {
   const [copied, setCopied] = useState(false);
   useEffect(() => {
     if (!copied) return;
@@ -38,9 +39,10 @@ function CopyEmail() {
   return (
     <button
       type="button"
+      disabled={!email}
       onClick={() => {
         navigator.clipboard
-          ?.writeText(PROFILE.email)
+          ?.writeText(email)
           .then(() => setCopied(true))
           .catch(() => {});
       }}
@@ -72,6 +74,7 @@ export default function Contact() {
     return () => window.clearTimeout(t);
   }, [active, held, inView, reduced]);
 
+  const email = useEmail();
   const city = CITIES[active];
   const home = useZonedTime(HOME.timeZone);
   const there = useZonedTime(city.timeZone);
@@ -124,12 +127,12 @@ export default function Contact() {
             <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">Email</div>
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
               <a
-                href={LINKS.email}
-                className="draw-underline text-[clamp(22px,2.4vw,34px)] font-medium tracking-[-0.025em] text-ink"
+                href={email ? `mailto:${email}` : "#contact"}
+                className="draw-underline min-h-[1.2em] text-[clamp(22px,2.4vw,34px)] font-medium tracking-[-0.025em] text-ink"
               >
-                {PROFILE.email}
+                {email || "Email me"}
               </a>
-              <CopyEmail />
+              <CopyEmail email={email} />
             </div>
           </Reveal>
 

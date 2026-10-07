@@ -5,8 +5,10 @@ import Image from "next/image";
 import { m, useScroll, useTransform, type MotionValue } from "motion/react";
 import Reveal from "@/components/ui/Reveal";
 import Counter from "@/components/ui/Counter";
+import Snapshots from "@/components/site/Snapshots";
 import { useActive } from "@/components/ui/hooks";
 import { EDUCATION } from "@/lib/data";
+import avatar from "@/assets/me/avatar.webp";
 
 const STORY =
   "I'm Lucas, a backend engineer with *8+ years* in production. I've built Go microservices for a *digital bank,* led a 0‑to‑1 Laravel platform with a team of five to six, and now build *MCP tooling* and agent guardrails at YTL AI Labs. I like the parts nobody sees: race conditions, query plans, hash slots, and the CI/CD that keeps releases boring. Next chapter: *Australia or New Zealand.*";
@@ -38,7 +40,7 @@ function Word({ w, accent, progress, range }: { w: string; accent: boolean; prog
 const FACTS: { to?: number; text?: string; suffix?: string; label: string }[] = [
   { to: 8, suffix: "+", label: "years shipping production systems" },
   { to: 3, label: "industries: fintech, SaaS, AI platforms" },
-  { text: "5–6", label: "engineers led and mentored as Lead Developer" },
+  { text: "5–6", label: "people led and mentored as Lead Developer" },
 ];
 
 export default function About() {
@@ -51,7 +53,7 @@ export default function About() {
 
   return (
     <section ref={sectionRef} id="about" className="relative py-24 md:py-32">
-      <div className="shell grid gap-14 lg:grid-cols-12 lg:gap-10">
+      <div className="shell grid gap-14 lg:grid-cols-12 lg:grid-rows-[auto_1fr] lg:gap-x-10">
         <div className="lg:col-span-4">
           <Reveal y={12} className="eyebrow flex items-center gap-3">
             <span className="text-accent">01</span>
@@ -72,8 +74,8 @@ export default function About() {
             </m.svg>
             <div className="absolute inset-[15%] overflow-hidden rounded-full ring-1 ring-line-strong">
               <Image
-                src="/icon.png"
-                alt="Illustrated portrait of Lucas Sim"
+                src={avatar}
+                alt="Illustration of Lucas in headphones, sipping from a mug with a code icon on it"
                 fill
                 sizes="(max-width: 1024px) 50vw, 200px"
                 className="object-cover transition-transform duration-700 ease-expo hover:scale-105"
@@ -82,7 +84,7 @@ export default function About() {
           </Reveal>
         </div>
 
-        <div className="lg:col-span-8">
+        <div className="lg:col-span-8 lg:row-span-2">
           <p
             ref={textRef}
             className="text-[clamp(26px,3.3vw,48px)] font-medium leading-[1.18] tracking-[-0.03em] text-ink"
@@ -118,6 +120,10 @@ export default function About() {
             ))}
           </Reveal>
         </div>
+
+        <Reveal delay={0.1} className="mt-4 lg:col-span-4 lg:row-start-2 lg:mt-0">
+          <Snapshots className="ml-3 w-[min(270px,66vw)] pt-12" />
+        </Reveal>
       </div>
     </section>
   );

@@ -6,7 +6,8 @@ import SystemMesh, { FLOWS, type Flow } from "./SystemMesh";
 import Magnetic from "@/components/ui/Magnetic";
 import { ArrowDown, Download } from "@/components/ui/Icons";
 import { useZonedTime } from "@/components/ui/hooks";
-import { LINKS, PROFILE } from "@/lib/data";
+import OrgLogo from "@/components/site/OrgLogo";
+import { LINKS, ORGS, PROFILE, PROOF, type OrgId } from "@/lib/data";
 
 // The headline is three claims; each one lights up its path on the system map.
 const LINES: { flow: Flow; pre: string; em: string; post: string }[] = [
@@ -127,17 +128,32 @@ export default function Hero() {
       </div>
 
       <div className="shell relative">
-        <div
-          className="fade-rise mt-16 grid grid-cols-2 gap-x-6 gap-y-3 border-t border-line py-6 font-mono text-[11.5px] uppercase tracking-[0.12em] text-ink-3 md:mt-20 md:grid-cols-4"
-          style={delay(0.95)}
-        >
-          <div>
-            <span className="text-ink-2">{PROFILE.years} years</span> in production
-          </div>
-          <div>Go · PHP · Python · SQL</div>
-          <div>Fintech · SaaS · AI platforms</div>
-          <div className="md:text-right">
-            Kuala Lumpur <span className="text-ink-2">{time}</span>
+        <div className="fade-rise mt-16 border-t border-line md:mt-20" style={delay(0.95)}>
+          {/* The three numbers to leave with. */}
+          <ul className="grid divide-y divide-line sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+            {PROOF.map((p) => (
+              <li key={p.label} className="py-6 sm:px-6 sm:py-8 sm:first:pl-0 sm:last:pr-0 lg:px-10">
+                <div className="text-[clamp(46px,5vw,76px)] font-medium leading-[0.9] tracking-[-0.055em] text-ink [font-stretch:84%]">
+                  {p.value}
+                </div>
+                <div className="mt-3 text-[15.5px] leading-snug text-ink">{p.label}</div>
+                <div className="mt-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3">{p.detail}</div>
+              </li>
+            ))}
+          </ul>
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-line py-5">
+            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">Shipped at</span>
+            <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {(Object.keys(ORGS) as OrgId[]).map((id) => (
+                <li key={id} className="flex items-center gap-2.5 text-[14.5px] text-ink-2">
+                  <OrgLogo org={id} size={30} />
+                  {ORGS[id].name}
+                </li>
+              ))}
+            </ul>
+            <span className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-ink-3 lg:ml-auto">
+              Kuala Lumpur <span className="text-ink-2">{time}</span>
+            </span>
           </div>
         </div>
       </div>

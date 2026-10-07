@@ -1,10 +1,46 @@
 "use client";
 
-import { arcPath } from "@/components/viz/geometry";
+import { useEffect, useRef } from "react";
+import Image from "next/image";
+import { animate } from "motion/react";
+import { arcPath, type Pt } from "@/components/viz/geometry";
+import { usePrefersReducedMotion } from "@/components/ui/hooks";
 import { CITIES, HOME, LAND_DOTS, MAP_H, MAP_W } from "@/lib/map";
+import traveller from "@/assets/me/pin.webp";
+
+const FROM: Pt = [HOME.x, HOME.y];
+const DRAW_S = 1.3; // matches .arc-draw
+const EXPO = [0.16, 1, 0.3, 1] as const;
+
+function quad(a: Pt, c: Pt, b: Pt, t: number): Pt {
+  const mt = 1 - t;
+  return [mt * mt * a[0] + 2 * mt * t * c[0] + t * t * b[0], mt * mt * a[1] + 2 * mt * t * c[1] + t * t * b[1]];
+}
 
 // Every route bows north-east of the straight line, like a great-circle track on Mercator.
-const ARCS = CITIES.map((c) => ({ id: c.id, ...arcPath([HOME.x, HOME.y], [c.x, c.y], -0.17) }));
+// `lut` is the running length at even steps of t, so a marker can keep pace with the line as it draws.
+const ARCS = CITIES.map((city) => {
+  const to: Pt = [city.x, city.y];
+  const arc = arcPath(FROM, to, -0.17);
+  const lut = [0];
+  let prev = FROM;
+  for (let i = 1; i <= 64; i++) {
+    const p = quad(FROM, arc.c, to, i / 64);
+    lut.push(lut[i - 1] + Math.hypot(p[0] - prev[0], p[1] - prev[1]));
+    prev = p;
+  }
+  return { id: city.id, ...arc, to, lut };
+});
+
+/** The point a given fraction of the way along a route, by length. */
+function along(i: number, f: number): Pt {
+  const { lut, c, to } = ARCS[i];
+  const goal = f * lut[lut.length - 1];
+  let k = 1;
+  while (k < lut.length - 1 && lut[k] < goal) k++;
+  const t = (k - 1 + (goal - lut[k - 1]) / (lut[k] - lut[k - 1] || 1)) / (lut.length - 1);
+  return quad(FROM, c, to, t);
+}
 
 const pct = (v: number, of: number) => `${(v / of) * 100}%`;
 
@@ -121,6 +157,8 @@ export default function RelocationMap({
         ))}
       </svg>
 
+      <Traveller active={active} shown={shown} />
+
       {/* Labels live in HTML so they stay legible at any map size. */}
       <span
         className="pointer-events-none absolute -translate-y-1/2 pl-6 font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-2 sm:text-[11.5px]"
@@ -147,6 +185,43 @@ export default function RelocationMap({
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** A pin of Lucas that rides the tip of the route as it draws out to the next city. */
+function Traveller({ active, shown }: { active: number; shown: boolean }) {
+  const ref = useRef<HTMLDivElement>(null);
+  const reduced = usePrefersReducedMotion();
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || !shown) return;
+    const place = (f: number) => {
+      const [x, y] = along(active, f);
+      el.style.left = pct(x, MAP_W);
+      el.style.top = pct(y, MAP_H);
+    };
+    if (reduced) {
+      place(1);
+      return;
+    }
+    place(0);
+    const flight = animate(0, 1, { duration: DRAW_S, ease: EXPO, onUpdate: place });
+    return () => flight.stop();
+  }, [active, shown, reduced]);
+
+  return (
+    <div
+      ref={ref}
+      aria-hidden
+      className="pointer-events-none absolute z-10 -translate-x-1/2 -translate-y-full transition-opacity duration-500"
+      style={{ left: pct(HOME.x, MAP_W), top: pct(HOME.y, MAP_H), opacity: shown ? 1 : 0 }}
+    >
+      <div className="relative h-10 w-10 overflow-hidden rounded-full border-2 border-accent bg-[#e2f4fe] shadow-[0_10px_28px_-8px_rgba(255,106,10,0.7)] sm:h-12 sm:w-12">
+        <Image src={traveller} alt="" fill sizes="48px" className="object-cover" />
+      </div>
+      <span className="mx-auto -mt-px block h-0 w-0 border-x-[5px] border-t-[7px] border-x-transparent border-t-accent" />
     </div>
   );
 }

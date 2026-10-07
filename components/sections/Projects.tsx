@@ -8,17 +8,14 @@ import { ArrowUpRight, Github } from "@/components/ui/Icons";
 import { spotlight, useMediaQuery } from "@/components/ui/hooks";
 import { PROJECTS, type Project } from "@/lib/data";
 import Window from "@/components/projects/Window";
+import InletPreview from "@/components/projects/InletPreview";
 import RagPreview from "@/components/projects/RagPreview";
 import TransferPreview from "@/components/projects/TransferPreview";
-import StatementPreview from "@/components/projects/StatementPreview";
+import CrabPreview from "@/components/projects/CrabPreview";
 
-const PREVIEW = { rag: RagPreview, transfer: TransferPreview, statement: StatementPreview } as const;
+const PREVIEW = { inlet: InletPreview, rag: RagPreview, transfer: TransferPreview, crab: CrabPreview } as const;
 // Phones stack the preview under the copy, so each one gets the height its content needs.
-const PREVIEW_H = { rag: "h-[560px]", transfer: "h-[480px]", statement: "h-[600px]" } as const;
-
-function host(url: string) {
-  return url.replace(/^https?:\/\//, "").replace(/\/$/, "");
-}
+const PREVIEW_H = { inlet: "h-[500px]", rag: "h-[560px]", transfer: "h-[480px]", crab: "h-[500px]" } as const;
 
 function ProjectCard({
   project: p,
@@ -57,6 +54,7 @@ function ProjectCard({
               {p.title}
             </h3>
             <p className="mt-5 max-w-[34rem] text-[15.5px] leading-relaxed text-ink-2">{p.description}</p>
+            {p.note && <p className="mt-2.5 text-[12.5px] text-ink-3">{p.note}</p>}
             <ul className="mt-6 flex flex-wrap gap-2" aria-label="Built with">
               {p.tags.map((t) => (
                 <li
@@ -75,21 +73,23 @@ function ProjectCard({
                 </li>
               ))}
             </ol>
-            <div className="mt-auto flex flex-wrap gap-3 pt-9">
+            <div className="mt-auto flex flex-wrap items-center gap-3 pt-9">
               {p.caseStudy && (
                 <Link href={p.caseStudy} className="btn btn-sm btn-primary">
                   Read the case study <ArrowUpRight className="btn-icon-x" size={16} />
                 </Link>
               )}
-              <a
-                href={p.demoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn btn-sm btn-ghost"
-                aria-label={`${p.title} live demo (opens in a new tab)`}
-              >
-                Live demo <ArrowUpRight className="btn-icon-x" size={16} />
-              </a>
+              {p.demoUrl && (
+                <a
+                  href={p.demoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="btn btn-sm btn-ghost"
+                  aria-label={`${p.title} live demo (opens in a new tab)`}
+                >
+                  Live demo <ArrowUpRight className="btn-icon-x" size={16} />
+                </a>
+              )}
               {p.repoUrl && (
                 <a
                   href={p.repoUrl}
@@ -101,6 +101,12 @@ function ProjectCard({
                   <Github size={16} /> Code
                 </a>
               )}
+              {p.status && (
+                <span className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-2">
+                  <span className="live-dot text-accent" style={{ width: 6, height: 6 }} />
+                  {p.status}
+                </span>
+              )}
             </div>
           </div>
 
@@ -109,7 +115,7 @@ function ProjectCard({
               aria-hidden
               className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[110px]"
             />
-            <Window url={host(p.demoUrl)} className={`relative ${PREVIEW_H[p.preview]} sm:h-[480px] lg:h-full`}>
+            <Window chrome={p.chrome} className={`relative ${PREVIEW_H[p.preview]} sm:h-[480px] lg:h-full`}>
               <Preview />
             </Window>
           </div>
@@ -132,7 +138,7 @@ export default function Projects() {
           index="04"
           label="Projects"
           title="Making the invisible *visible.*"
-          intro="Side projects that open up backend flows you normally never see. The previews here are live animations of what each demo does."
+          intro="Side projects that make hidden things visible: query round trips, a RAG pipeline, money moving, and your Claude Code limits. Each preview is a live animation of what the real thing does."
         />
         <div ref={stackRef} className="relative flex flex-col gap-6 lg:gap-0">
           {PROJECTS.map((p, i) => (

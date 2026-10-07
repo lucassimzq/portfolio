@@ -5,6 +5,8 @@ import Image from "next/image";
 import { AnimatePresence, m, useMotionValueEvent, useScroll, useSpring } from "motion/react";
 import { LINKS, NAV, PROFILE } from "@/lib/data";
 import { ArrowUpRight } from "@/components/ui/Icons";
+import { useEmail } from "@/components/site/Email";
+import avatar from "@/assets/me/avatar.webp";
 
 export default function Nav() {
   const { scrollY, scrollYProgress } = useScroll();
@@ -13,6 +15,7 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [active, setActive] = useState<string>("");
+  const email = useEmail();
 
   // Hide on the way down, return on the way up.
   useMotionValueEvent(scrollY, "change", (y) => {
@@ -57,12 +60,11 @@ export default function Nav() {
           <div className="shell flex h-16 items-center justify-between gap-6">
             <a href="#top" className="group flex items-center gap-3" onClick={() => setOpen(false)}>
               <Image
-                src="/icon.png"
+                src={avatar}
                 alt=""
                 width={30}
                 height={30}
-                priority
-                className="rounded-full transition-transform duration-700 ease-expo group-hover:rotate-[360deg]"
+                className="shrink-0 rounded-full transition-transform duration-700 ease-expo group-hover:rotate-[360deg]"
               />
               <span className="text-[15px] font-medium tracking-tight">{PROFILE.name}</span>
               <span className="hidden font-mono text-[11px] uppercase tracking-[0.12em] text-ink-3 sm:inline">
@@ -141,7 +143,7 @@ export default function Nav() {
               exit={{ opacity: 0 }}
               className="flex flex-col gap-2 border-t border-line pt-6 text-[15px] text-ink-2"
             >
-              <a href={LINKS.email}>{PROFILE.email}</a>
+              {email && <a href={`mailto:${email}`}>{email}</a>}
               <div className="flex gap-5">
                 <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer">LinkedIn</a>
                 <a href={LINKS.github} target="_blank" rel="noopener noreferrer">GitHub</a>

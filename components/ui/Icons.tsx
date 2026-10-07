@@ -24,6 +24,12 @@ export const ArrowUpRight = ({ className, size = 18 }: P) => (
   </svg>
 );
 
+export const ArrowRight = ({ className, size = 18 }: P) => (
+  <svg {...base(size)} className={className}>
+    <path d="M5 12h14M13 6l6 6-6 6" />
+  </svg>
+);
+
 export const ArrowLeft = ({ className, size = 18 }: P) => (
   <svg {...base(size)} className={className}>
     <path d="M19 12H5M11 6l-6 6 6 6" />

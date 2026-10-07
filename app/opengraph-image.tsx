@@ -21,7 +21,7 @@ async function googleFont(query: string) {
 
 export default async function Image() {
   const [avatar, sans, serif] = await Promise.all([
-    readFile(join(process.cwd(), "public/icon.png")),
+    readFile(join(process.cwd(), "app/icon.png")),
     googleFont("Instrument+Sans:wght@500"),
     googleFont("Instrument+Serif:ital@1"),
   ]);

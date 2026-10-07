@@ -62,10 +62,6 @@ export const metadata: Metadata = {
     title: "Lucas Sim — Backend Engineer",
     description,
   },
-  icons: {
-    icon: "/icon.png",
-    apple: "/icon.png",
-  },
 };
 
 export const viewport: Viewport = {
@@ -79,7 +75,6 @@ const personJsonLd = {
   name: PROFILE.fullName,
   alternateName: PROFILE.name,
   jobTitle: PROFILE.role,
-  email: PROFILE.email,
   address: { "@type": "PostalAddress", addressLocality: "Kuala Lumpur", addressCountry: "MY" },
   worksFor: { "@type": "Organization", name: PROFILE.current.company },
   sameAs: [LINKS.github, LINKS.linkedin],

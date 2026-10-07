@@ -73,8 +73,8 @@ function Row({ items, speed, variant }: { items: string[]; speed: number; varian
 export default function Marquee() {
   const half = Math.ceil(MARQUEE.length / 2);
   return (
-    <section aria-label="Core stack" className="relative border-y border-line py-6 md:py-10">
-      <p className="sr-only">Core stack: {MARQUEE.join(", ")}.</p>
+    <section aria-label="Specialties and stack" className="relative border-y border-line py-6 md:py-10">
+      <p className="sr-only">Specialties and stack: {MARQUEE.join(", ")}.</p>
       <Row items={MARQUEE.slice(0, half)} speed={-3.2} variant="solid" />
       <Row items={MARQUEE.slice(half)} speed={2.6} variant="outline" />
     </section>
