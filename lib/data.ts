@@ -18,7 +18,7 @@ export const PROFILE = {
 
 // Kept in two halves so the address never sits whole in the HTML or the JS bundle,
 // where scrapers look for it; components/site/Email.tsx joins it in the browser.
-export const EMAIL = { user: "lucas.simzq", domain: "gmail.com" };
+export const EMAIL = { user: "hello", domain: "lucascodes.dev" };
 
 export const LINKS = {
   github: "https://github.com/lucassimzq",
