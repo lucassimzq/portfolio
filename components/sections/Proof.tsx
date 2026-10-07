@@ -7,14 +7,14 @@ import { IMPACT, type Impact } from "@/lib/data";
 
 /** Each result, the figure that stands for it, and what to do to it. */
 const LEAD: { id: keyof typeof IMPACT; figure: FigureName; label: string; hint: string }[] = [
-  { id: "query", figure: "query", label: "A question mark built as a solid; its hook turns toward the pointer", hint: "Point anywhere" },
-  { id: "ship", figure: "branches", label: "A commit graph with a branch forking off main and merging back", hint: "Hover a commit" },
+  { id: "query", figure: "query", label: "A table of eight rows under an index tree; on the left a cursor scans every row, on the right the lookup hops straight to one", hint: "← before · after →" },
+  { id: "ship", figure: "ship", label: "Twelve steps, one a month, climbed by a team of six; the flag goes up at the top", hint: "Move across" },
 ];
 const REST: { id: keyof typeof IMPACT; figure: FigureName; label: string; hint: string }[] = [
-  { id: "migration", figure: "riffle", label: "A tray of eight cards; the one under the pointer stands up", hint: "Hover · ← →" },
-  { id: "guardrails", figure: "sieve", label: "Three sieves over a pan; the pointer's height lifts one clear", hint: "Move up, down" },
-  { id: "race", figure: "padlock", label: "A padlock whose shackle swings open as the pointer comes near", hint: "Come closer" },
-  { id: "slots", figure: "terrain", label: "A field of pillars that rise around the pointer, like a hot key", hint: "Find the hot spot" },
+  { id: "migration", figure: "migration", label: "Rows moving one slab at a time from an old tray to a new one while the app keeps reading", hint: "← →" },
+  { id: "guardrails", figure: "guardrails", label: "An agent inside a fence with the tools it may use; the ones outside stop it at the rail", hint: "Lead it out" },
+  { id: "race", figure: "race", label: "Two sign-ups racing through a locked gate; only one makes an account. Hovering takes the lock away", hint: "Hover: no lock" },
+  { id: "slots", figure: "slots", label: "Sixteen slot pillars; load piles up near the pointer, then spreads back out", hint: "Point" },
 ];
 
 /** A specialty: the figure large on the left, the result beside it. */
@@ -27,7 +27,7 @@ function Lead({ item, figure, label, hint, n }: { item: Impact; figure: FigureNa
           <span>Fig 2.{n}</span>
           <span>{item.specialty}</span>
         </div>
-        <Figure name={figure} label={label} onRead={setRead} intensity={0.7} />
+        <Figure name={figure} label={label} onRead={setRead} />
         <div className="plate-corner bottom" aria-hidden>
           <span>{hint}</span>
           <span className="readout">{read}</span>

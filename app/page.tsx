@@ -17,7 +17,7 @@ export default function Home() {
         Skip to content
       </a>
       <Topbar />
-      <main id="main">
+      <main id="main" className="overflow-x-clip">
         <Hero />
         <About />
         <Proof />

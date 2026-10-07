@@ -2,9 +2,9 @@
 
 /* ── Tokens ─────────────────────────────────────────────────────
    v3 borrows the drafting-table look of hairline (github.com/lucasmarkes/hairline):
-   a white canvas, chroma-free greys, one serif word per heading, mono only for
+   a white canvas, greys without chroma, one serif word per heading, mono only for
    labels and read-outs, and isometric line figures that answer the pointer.
-   Colour is information here, so the only "accent" is ink. */
+   One colour on top: orange, for whatever is happening right now. */
 :root {
   --bg: #ffffff;
   --bg-elev: #fafafa;
@@ -16,8 +16,11 @@
   --text-2: #525252;
   --text-3: #737373;
   --text-4: #a3a3a3;
-  --accent: #0a0a0a;
-  --accent-2: #525252;
+  /* orange for strokes and fills; a deeper one for large text, deeper still for small */
+  --accent: #ff6a0a;
+  --accent-text: #e8590c;
+  --accent-ink: #c2410c;
+  --accent-soft: #fff0e5;
   --ok: #16a34a;
   --err: #dc2626;
   --warn: #ca8a04;
@@ -52,7 +55,8 @@
   --color-ink-3: var(--text-3);
   --color-faint: var(--text-4);
   --color-accent: var(--accent);
-  --color-peach: var(--accent-2);
+  --color-accent-ink: var(--accent-ink);
+  --color-peach: var(--accent-soft);
   --color-ok: var(--ok);
   --color-err: var(--err);
   --color-warn: var(--warn);
@@ -85,7 +89,7 @@ body {
 
 em { font-style: italic; }
 
-::selection { background: #0a0a0a; color: #fff; }
+::selection { background: #ffdcc4; color: var(--text-1); }
 
 :focus-visible {
   outline: 1.5px solid var(--text-1);
@@ -108,7 +112,7 @@ em { font-style: italic; }
     display: flex; align-items: center; gap: 10px;
     font: 400 11.5px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3);
   }
-  .sec-label b { font-weight: 400; color: var(--text-1); }
+  .sec-label b { font-weight: 400; color: var(--accent-ink); }
   .sec-label::after { content: ""; height: 1px; flex: 1; background: var(--border); }
   .sec-h {
     margin-top: 14px; max-width: 28ch;
@@ -117,7 +121,7 @@ em { font-style: italic; }
   .sec-h em, .hero-title em, .serif-accent {
     font-family: var(--font-serif); font-style: italic; font-weight: 400; letter-spacing: -0.01em;
   }
-  .sec-h em, .hero-title em { font-size: 1.1em; }
+  .sec-h em, .hero-title em { font-size: 1.1em; color: var(--accent-text); }
   .sec-lede { margin-top: 10px; max-width: 52ch; font-size: 15px; line-height: 1.6; color: var(--text-3); text-wrap: pretty; }
 
   .eyebrow { font: 400 11.5px/1.4 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
@@ -147,7 +151,7 @@ em { font-style: italic; }
   /* the dot that flies to the section in view */
   .topbar-dot {
     position: absolute; top: 50%; left: 0; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%;
-    background: var(--text-1); pointer-events: none; opacity: 0;
+    background: var(--accent); pointer-events: none; opacity: 0;
     transition: translate 300ms var(--ease-out), opacity 200ms ease;
   }
   .topbar-sub { font-size: 12px; line-height: 1; color: var(--text-3); }
@@ -165,7 +169,7 @@ em { font-style: italic; }
   .btn:active { transform: scale(0.96); }
   @media (hover: hover) { .btn:hover { box-shadow: inset 0 0 0 1px #e5e5e5, 0 1px 2px #00000008, 0 12px 28px -16px #0000002e; } }
   .btn-primary { background: var(--text-1); color: #fff; box-shadow: var(--lift); }
-  @media (hover: hover) { .btn-primary:hover { background: #262626; box-shadow: var(--lift); } }
+  @media (hover: hover) { .btn-primary:hover { background: var(--accent-ink); box-shadow: var(--lift); } }
   .btn-ghost { background: #fff; }
   .btn-sm { height: 32px; padding: 0 12px; font-size: 13px; border-radius: 8px; }
   .btn .btn-icon, .btn .btn-icon-x { transition: transform 300ms var(--ease-out); }
@@ -180,7 +184,7 @@ em { font-style: italic; }
     font: 400 13px/1 var(--font-mono); text-align: left;
   }
   .pill-line { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-  .pill-prompt { color: var(--text-4); }
+  .pill-prompt { color: var(--accent); }
 
   /* copy as an icon: the clipboard blurs away as the tick grows in */
   .icopy {
@@ -233,9 +237,9 @@ em { font-style: italic; }
     display: inline-flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px 0 11px; border-radius: 999px;
     background: #fff; box-shadow: var(--card); font-size: 12.5px; color: var(--text-2);
   }
-  .badge-dot { position: relative; width: 6px; height: 6px; border-radius: 50%; background: var(--text-1); }
+  .badge-dot { position: relative; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
   .badge-dot::after {
-    content: ""; position: absolute; inset: -3px; border-radius: 50%; box-shadow: 0 0 0 1px var(--text-1);
+    content: ""; position: absolute; inset: -3px; border-radius: 50%; box-shadow: 0 0 0 1px var(--accent);
     animation: ping 2.4s var(--ease-out) infinite;
   }
   @keyframes ping { 0% { transform: scale(0.5); opacity: 0.45; } 70%, 100% { transform: scale(1.15); opacity: 0; } }
@@ -253,9 +257,9 @@ em { font-style: italic; }
   .assembly .edge { stroke: #3f3f46; stroke-width: 1.15; }
   .assembly .part { stroke: #bdbdc2; stroke-dasharray: 1 1; }
   .assembly .pip { stroke: #3f3f46; }
-  .assembly .lit { stroke: var(--text-1); stroke-width: 1.15; stroke-dasharray: 1 1; }
+  .assembly .lit { stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 1 1; }
   .assembly .guide { stroke: #c4c4ca; stroke-dasharray: 2 4; }
-  .assembly .packet { fill: var(--text-1); stroke: none; }
+  .assembly .packet { fill: var(--accent); stroke: none; }
   .assembly .tag { font: 400 10px/1 var(--font-mono); letter-spacing: 0.06em; fill: var(--text-3); text-transform: uppercase; }
   .assembly .tick { stroke: #cfcfd4; }
   .assembly .tag, .assembly .tick { transition: fill 200ms ease; }
@@ -266,7 +270,7 @@ em { font-style: italic; }
   .stats > li { padding: 18px 0 16px; }
   .stats > li + li { padding-left: clamp(12px, 3vw, 28px); border-left: 1px solid var(--border); }
   .stat-n { font-size: clamp(26px, 4.2vw, 40px); font-weight: 500; line-height: 1; letter-spacing: -0.045em; font-variant-numeric: tabular-nums; }
-  .stat-n .unit { color: var(--text-4); }
+  .stat-n .unit { color: var(--accent-text); }
   .stat-l { margin-top: 8px; font-size: 13px; line-height: 1.4; color: var(--text-3); text-wrap: pretty; }
 
   /* ── Plates: a card with a live figure on its stage ────────────── */
@@ -276,11 +280,11 @@ em { font-style: italic; }
   }
   @media (hover: hover) { .plate:hover { box-shadow: inset 0 0 0 1px #ebebeb, 0 1px 2px #00000008, 0 12px 28px -18px #0000002b; } }
   .plate-stage { position: relative; width: 100%; aspect-ratio: 5 / 4; }
-  .plate-stage > [data-hairline] { width: 100%; }
+
   /* on a phone a full-width 5:4 stage is taller than the screen can spare: the figure keeps its 240px+, the stage hugs it */
   @media (max-width: 639px) {
     .plate-stage { aspect-ratio: auto; padding: 30px 0 28px; }
-    .plate-stage > [data-hairline] { width: min(74%, 300px); margin-inline: auto; }
+    .plate-stage > .fig { width: min(80%, 320px); margin-inline: auto; }
     .assembly { width: 165%; margin-left: -32.5%; }
   }
   .plate-corner {
@@ -290,7 +294,7 @@ em { font-style: italic; }
   }
   .plate-corner.top { top: 12px; }
   .plate-corner.bottom { bottom: 11px; }
-  .plate-corner .readout { color: var(--text-1); font-variant-numeric: tabular-nums; text-transform: none; }
+  .plate-corner .readout { color: var(--accent-ink); font-variant-numeric: tabular-nums; text-transform: none; }
   .plate-foot { display: grid; gap: 2px; margin-top: auto; padding: 12px 16px 14px; border-top: 1px solid var(--border); }
   .plate-metric { font-size: 19px; font-weight: 500; line-height: 1.2; letter-spacing: -0.025em; }
   .plate-title { font-size: 13px; line-height: 1.45; color: var(--text-3); text-wrap: pretty; }
@@ -302,7 +306,7 @@ em { font-style: italic; }
     content: ""; position: absolute; top: 6px; bottom: 6px; left: 7px; width: 1px; background: #e5e5e5;
   }
   .career::after {
-    content: ""; position: absolute; top: 6px; left: 7px; width: 1px; height: calc(100% - 12px); background: var(--text-1);
+    content: ""; position: absolute; top: 6px; left: 7px; width: 1px; height: calc(100% - 12px); background: var(--accent);
     transform-origin: top; transform: scaleY(var(--reach, 0)); transition: transform 420ms var(--ease-out);
   }
   .role { position: relative; padding: 18px 0 20px; transition: opacity 300ms ease; }
@@ -315,9 +319,9 @@ em { font-style: italic; }
   }
   .role::after {
     content: ""; position: absolute; top: 25.5px; left: -7px; width: 5px; height: 5px; border-radius: 50%;
-    background: var(--text-1); transform: scale(0); transition: transform 180ms var(--ease-out) 200ms;
+    background: var(--accent); transform: scale(0); transition: transform 180ms var(--ease-out) 200ms;
   }
-  .role[data-on]::before { border-color: var(--text-1); }
+  .role[data-on]::before { border-color: var(--accent); }
   .role[data-on]::after { transform: none; }
   .career[data-live] .role:not([data-on]) { opacity: 0.42; }
   @media (hover: hover) { .career[data-live] .role:not([data-on]):hover { opacity: 0.8; } }
@@ -341,7 +345,7 @@ em { font-style: italic; }
     box-shadow: inset 0 0 0 1px var(--stone), var(--lift); cursor: pointer; transition: box-shadow 180ms ease;
   }
   @media (hover: hover) { .tile:hover { box-shadow: inset 0 0 0 1px #ebebeb, 0 1px 2px #00000008, 0 12px 28px -18px #0000002b; } }
-  .tile[data-picked] { box-shadow: inset 0 0 0 1.5px var(--text-1), var(--lift); }
+  .tile[data-picked] { box-shadow: inset 0 0 0 1.5px var(--accent), var(--lift); }
   .tile-foot { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; padding: 11px 14px 13px; border-top: 1px solid var(--border); }
   .tile-name { font-size: 14px; font-weight: 500; line-height: 1.35; }
   .tile-kicker { margin-top: 2px; font-size: 12.5px; line-height: 1.4; color: var(--text-3); }
@@ -375,16 +379,55 @@ em { font-style: italic; }
   @media (hover: hover) { .detail-close:hover { color: var(--text-1); background: var(--stone); } }
   .detail-stage { border-radius: 12px; box-shadow: inset 0 0 0 1px var(--stone); }
   .doc-more { color: var(--text-1); text-decoration: underline; text-decoration-color: var(--text-4); text-underline-offset: 4px; transition: text-decoration-color 150ms ease; }
-  @media (hover: hover) { .doc-more:hover { text-decoration-color: currentColor; } }
+  @media (hover: hover) { .doc-more:hover { text-decoration-color: var(--accent); } }
 
-  /* ── About ───────────────────────────────────────────────────── */
-  .photo {
-    position: relative; overflow: hidden; border-radius: 12px; background: var(--stone);
-    box-shadow: inset 0 0 0 1px var(--stone), var(--lift);
+  /* ── Figures (components/figures): white faces, a bright hull, dim creases, orange for what's happening ── */
+  .fig { position: relative; width: 100%; touch-action: pan-y; -webkit-user-select: none; user-select: none; }
+  .fig svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .fig :is(path, ellipse, circle, rect) { fill: none; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
+  .fig .f { fill: #fff; stroke: none; }
+  .fig .s { stroke: #3f3f46; stroke-width: 1.15; }
+  .fig .c { stroke: #c8c8cd; }
+  .fig .d { stroke: #cfcfd4; stroke-dasharray: 1.5 3; }
+  .fig .o { stroke: var(--accent); stroke-width: 1.3; }
+  .fig .od { stroke: var(--accent); stroke-dasharray: 2 3; }
+  .fig .ot { fill: var(--accent-soft); stroke: none; }
+  .fig .of { fill: var(--accent); stroke: none; }
+  .fig .k { fill: #a1a1aa; stroke: none; }
+  .fig .g { fill: #f1f1f2; stroke: none; }
+  .fig text { font: 400 11px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; stroke: none; }
+  .fig .t { fill: var(--text-3); }
+  .fig .to { fill: var(--accent-ink); }
+  .fig .tq { fill: var(--text-1); letter-spacing: 0; text-transform: none; }
+
+  /* ── Lucas's own line drawings, painted through a mask so the lines can change colour ── */
+  .sketch {
+    display: block; width: 100%; background-color: #1c1c1f;
+    -webkit-mask: var(--sketch) center / contain no-repeat; mask: var(--sketch) center / contain no-repeat;
+    transition: background-color 350ms var(--ease-out);
   }
-  .photo img { filter: grayscale(1) contrast(1.02); transition: filter 600ms var(--ease-out), transform 700ms var(--ease-out); }
-  @media (hover: hover) { .photo:hover img { filter: none; transform: scale(1.03); } }
-  .photo[data-color] img { filter: none; }
+  .sketch-card {
+    position: relative; display: grid; overflow: hidden; padding: 7%; border-radius: 12px; background: #fff;
+    box-shadow: inset 0 0 0 1px var(--stone), var(--lift); transition: background-color 350ms var(--ease-out), box-shadow 180ms ease;
+  }
+  .sketch-card > .sketch { position: relative; width: 100%; height: 100%; min-width: 0; min-height: 0; aspect-ratio: auto !important; }
+  @media (hover: hover) {
+    .sketch-card:hover { background-color: var(--accent-soft); }
+    .sketch-card:hover > .sketch { background-color: var(--accent-ink); }
+  }
+  /* the portrait: a warm disc behind the head, the drawing standing on the card's bottom edge */
+  .sketch-hero { padding: 7% 10% 0; }
+  .sketch-hero > .sketch { -webkit-mask-position: center bottom; mask-position: center bottom; }
+  .sketch-hero::before {
+    content: ""; position: absolute; top: 9%; left: 50%; width: 58%; aspect-ratio: 1; border-radius: 50%;
+    background: var(--accent-soft); translate: -50% 0; transition: scale 600ms var(--ease-out), background-color 350ms ease;
+  }
+  @media (hover: hover) {
+    .sketch-hero:hover { background-color: #fff; }
+    .sketch-hero:hover::before { scale: 1.08; background-color: #ffe2cc; }
+  }
+  /* a drawing that is a plate's whole stage: no card of its own */
+  .sketch-flat { padding: 15% 12% 6%; border-radius: 0; box-shadow: none; }
 
   /* the route on the contact map draws itself in each time the city changes */
   .route { stroke-dasharray: 1; stroke-dashoffset: 1; animation: draw 900ms var(--ease-out) 80ms forwards; }
@@ -399,10 +442,10 @@ em { font-style: italic; }
     font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--text-4);
   }
   .article-body strong { color: var(--text-1); font-weight: 500; }
-  .article-body em { color: var(--text-1); }
+  .article-body em { color: var(--accent-ink); }
 
   .draw-underline {
-    background-image: linear-gradient(currentColor, currentColor);
+    background-image: linear-gradient(var(--accent), var(--accent));
     background-size: 0% 1px; background-position: 0 100%; background-repeat: no-repeat;
     transition: background-size 0.5s var(--ease-expo);
   }

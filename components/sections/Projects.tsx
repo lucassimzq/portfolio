@@ -9,10 +9,10 @@ import { PROJECTS, type Project } from "@/lib/data";
 
 /** The figure that stands for each project, and what it shows. */
 const FIGURE: Record<Project["preview"], { name: FigureName; label: string }> = {
-  inlet: { name: "exploded", label: "An app window in four layers; moving across opens the gap" },
-  rag: { name: "loupe", label: "A loupe over a ruled sheet; the pointer drags it across" },
-  transfer: { name: "slow", label: "Crates riding a belt through a gate; hovering slows the clock" },
-  crab: { name: "terminal", label: "A terminal window; the pointer's height scrolls back through its history" },
+  inlet: { name: "inlet", label: "An app window taken apart into window, result grid and query bar; a query types itself and its rows come back" },
+  rag: { name: "rag", label: "Fifty profiles scattered on a plane; the three nearest the pointer stand up as tall as they are similar" },
+  transfer: { name: "transfer", label: "A coin hopping through balance, debit, credit and confirm, each step sending a message up a socket" },
+  crab: { name: "crab", label: "A pixel crab on a terminal whose context meter fills with the pointer's height; the crab worries as it fills" },
 };
 
 function Tile({ p, n, picked, onOpen }: { p: Project; n: number; picked: boolean; onOpen: (el: HTMLButtonElement) => void }) {
@@ -82,7 +82,7 @@ function Detail({ p, open, onClose }: { p: Project | null; open: boolean; onClos
               </button>
             </div>
             <div className="detail-stage plate-stage" key={p.slug}>
-              <Figure name={fig.name} label={fig.label} onRead={setRead} intensity={0.75} />
+              <Figure name={fig.name} label={fig.label} onRead={setRead} />
               <div className="plate-corner bottom" aria-hidden>
                 <span />
                 <span className="readout">{read}</span>

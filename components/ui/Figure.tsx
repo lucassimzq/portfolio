@@ -1,87 +1,62 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import {
-  Branches,
-  Cabinet,
-  Drawer,
-  Elevator,
-  Exploded,
-  Loupe,
-  Padlock,
-  Phone,
-  Plug,
-  Query,
-  Riffle,
-  Sieve,
-  Slow,
-  Terminal,
-  Terrain,
-} from "@lucasmarkes/hairline/react";
+import Query from "@/components/figures/Query";
+import Ship from "@/components/figures/Ship";
+import Migration from "@/components/figures/Migration";
+import Guardrails from "@/components/figures/Guardrails";
+import Race from "@/components/figures/Race";
+import Slots from "@/components/figures/Slots";
+import Inlet from "@/components/figures/Inlet";
+import Rag from "@/components/figures/Rag";
+import Transfer from "@/components/figures/Transfer";
+import Crab from "@/components/figures/Crab";
 
 /**
- * The line figures from hairline (github.com/lucasmarkes/hairline, MIT) the site uses,
- * by name. Each answers the pointer and reports a short caption through `onRead`.
+ * The site's line figures, by name, all drawn with components/figures/kit.tsx. Each
+ * answers the pointer and reports a short caption through `onRead`.
  */
 const FIGURES = {
-  branches: Branches,
-  cabinet: Cabinet,
-  drawer: Drawer,
-  elevator: Elevator,
-  exploded: Exploded,
-  loupe: Loupe,
-  padlock: Padlock,
-  phone: Phone,
-  plug: Plug,
   query: Query,
-  riffle: Riffle,
-  sieve: Sieve,
-  slow: Slow,
-  terminal: Terminal,
-  terrain: Terrain,
+  ship: Ship,
+  migration: Migration,
+  guardrails: Guardrails,
+  race: Race,
+  slots: Slots,
+  inlet: Inlet,
+  rag: Rag,
+  transfer: Transfer,
+  crab: Crab,
 };
 
 export type FigureName = keyof typeof FIGURES;
 
-/** One figure on its 5:4 stage, light whatever the OS theme, with its caption handed up. */
-export function Figure({
-  name,
-  label,
-  intensity = 0.6,
-  onRead,
-  className,
-}: {
-  name: FigureName;
-  label: string;
-  intensity?: number;
-  onRead?: (text: string) => void;
-  className?: string;
-}) {
+export function Figure({ name, label, onRead }: { name: FigureName; label: string; onRead?: (text: string) => void }) {
   const Fig = FIGURES[name];
-  return <Fig theme="light" intensity={intensity} label={label} onRead={onRead} className={className} />;
+  return <Fig label={label} onRead={onRead} />;
 }
 
 /**
  * A plate: a card with a live figure on its stage, a figure number and a note in its
  * top corners, a hint and the figure's read-out in its bottom ones, and whatever the
- * caller puts under it.
+ * caller puts under it. A figure that needs more than a name comes in through `draw`.
  */
 export function Plate({
   name,
+  draw,
   label,
   fig,
   note,
   hint,
-  intensity,
   children,
   className = "",
 }: {
-  name: FigureName;
+  name?: FigureName;
+  draw?: (onRead: (text: string) => void) => ReactNode;
   label: string;
   fig: string;
   note?: string;
   hint: string;
-  intensity?: number;
   children?: ReactNode;
   className?: string;
 }) {
@@ -93,7 +68,7 @@ export function Plate({
           <span>Fig {fig}</span>
           {note && <span className="text-right">{note}</span>}
         </div>
-        <Figure name={name} label={label} intensity={intensity} onRead={setRead} />
+        {draw ? draw(setRead) : name && <Figure name={name} label={label} onRead={setRead} />}
         <div className="plate-corner bottom" aria-hidden>
           <span>{hint}</span>
           <span className="readout">{read}</span>

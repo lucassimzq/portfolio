@@ -4,7 +4,7 @@ import { useCallback, useState } from "react";
 import InView, { at } from "@/components/ui/InView";
 import Swap from "@/components/ui/Swap";
 import EmailPill from "@/components/site/EmailPill";
-import { Plate } from "@/components/ui/Figure";
+import Sketch from "@/components/ui/Sketch";
 import { ArrowUpRight, Download, Github, Linkedin } from "@/components/ui/Icons";
 import { useZonedTime, usePrefersReducedMotion } from "@/components/ui/hooks";
 import { LINKS, PROFILE } from "@/lib/data";
@@ -19,17 +19,17 @@ function arc(x: number, y: number) {
   return `M${HOME.x} ${HOME.y}Q${(mx + (dy / len) * bow).toFixed(1)} ${(my - (dx / len) * bow).toFixed(1)} ${x} ${y}`;
 }
 
-/** The region as grey dots, home and the city in ink, the route drawn in as a dashed line each time it changes. */
+/** The region as grey dots, home in ink, the city and the route to it in orange, drawn in each time it changes. */
 function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => void }) {
   const city = CITIES[active];
   return (
     <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="block h-full w-full" role="img" aria-label={`A dot map from Kuala Lumpur to ${city.name}`}>
       <path d={LAND_DOTS} stroke="#cfcfd4" strokeWidth={6} strokeLinecap="round" fill="none" />
-      <path key={city.id} d={arc(city.x, city.y)} className="route" pathLength={1} fill="none" stroke="#0a0a0a" strokeWidth={1.4} vectorEffect="non-scaling-stroke" />
+      <path key={city.id} d={arc(city.x, city.y)} className="route" pathLength={1} fill="none" stroke="#ff6a0a" strokeWidth={1.4} vectorEffect="non-scaling-stroke" />
       {CITIES.map((c, i) => (
         <g key={c.id} onPointerEnter={() => onPick(i)} onClick={() => onPick(i)} className="cursor-pointer">
           <circle cx={c.x} cy={c.y} r={22} fill="transparent" />
-          <circle cx={c.x} cy={c.y} r={i === active ? 7 : 5} fill={i === active ? "#0a0a0a" : "#fff"} stroke="#0a0a0a" strokeWidth={1.4} style={{ transition: "r 200ms, fill 200ms" }} />
+          <circle cx={c.x} cy={c.y} r={i === active ? 7 : 5} fill={i === active ? "#ff6a0a" : "#fff"} stroke={i === active ? "#ff6a0a" : "#0a0a0a"} strokeWidth={1.4} style={{ transition: "r 200ms, fill 200ms" }} />
         </g>
       ))}
       <circle cx={HOME.x} cy={HOME.y} r={7} fill="#0a0a0a" />
@@ -123,20 +123,21 @@ export default function Contact() {
             </figcaption>
           </figure>
           <div style={at(1)} className="hidden sm:block">
-            <Plate
-              name="plug"
-              label="A plug on the floor at the end of its cord; the pointer draws it up toward the socket"
-              fig="5.2"
-              hint="Bring it closer"
-              intensity={0.8}
-            >
+            <article className="plate h-full">
+              <div className="sketch-card sketch-flat relative flex-1">
+                <div className="plate-corner top">
+                  <span>Fig 5.2</span>
+                  <span>KL, for now</span>
+                </div>
+                <Sketch name="skyline" alt="Line drawing of Lucas at a laptop with a coffee, the Kuala Lumpur skyline and its tower in the window behind" />
+              </div>
               <div className="plate-foot">
                 <div className="plate-metric">Let&apos;s connect.</div>
                 <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="plate-title doc-more inline-flex items-center gap-1">
                   Message on LinkedIn <ArrowUpRight size={12} />
                 </a>
               </div>
-            </Plate>
+            </article>
           </div>
         </InView>
       </div>

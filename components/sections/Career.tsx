@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import InView, { at } from "@/components/ui/InView";
 import { Plate } from "@/components/ui/Figure";
+import Floors from "@/components/figures/Floors";
 import { CONTRACT, EDUCATION, EXPERIENCE, STACK } from "@/lib/data";
 
 /** *phrase* → bold ink. */
@@ -11,6 +12,10 @@ function emphasise(text: string) {
     chunk.startsWith("*") ? <b key={i}>{chunk.slice(1, -1)}</b> : <Fragment key={i}>{chunk}</Fragment>,
   );
 }
+
+/** One floor a role, the first job at the bottom. */
+const FLOORS = EXPERIENCE.map((r) => r.company).reverse();
+const LABEL = "A building of five floors, one a role with the first job at the bottom; a lift runs to the role in view";
 
 /** "Jul 2026 — Present" → "2026 — now"; the months stay in the résumé. */
 const years = (period: string) =>
@@ -76,11 +81,11 @@ export default function Career() {
         <aside className="hidden md:block lg:col-span-5">
           <div className="grid gap-3.5 lg:sticky lg:top-[calc(var(--topbar)+24px)]">
             <Plate
-              name="elevator"
-              label="Four floors beside an open shaft; the pointer's height picks a floor and the car travels there"
+              label={LABEL}
+              draw={(onRead) => <Floors label={LABEL} onRead={onRead} names={FLOORS} floor={active >= 0 ? EXPERIENCE.length - 1 - active : undefined} />}
               fig="3.1"
-              note="4 floors · 4 companies"
-              hint="Move up, down"
+              note={`${EXPERIENCE.length} roles · 4 companies`}
+              hint="Scroll, or move up, down"
             />
             <div className="plate p-4">
               <p className="mono-label">Everyday stack</p>

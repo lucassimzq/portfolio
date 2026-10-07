@@ -1,16 +1,11 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image, { type StaticImageData } from "next/image";
+import { useRef } from "react";
 import { m, useScroll, useTransform, type MotionValue } from "motion/react";
 import InView, { at } from "@/components/ui/InView";
 import { useZonedTime } from "@/components/ui/hooks";
 import { EDUCATION, PROFILE } from "@/lib/data";
-import avatar from "@/assets/me/avatar.webp";
-import desk from "@/assets/me/desk.webp";
-import tennis from "@/assets/me/tennis.webp";
-import gaming from "@/assets/me/gaming.webp";
-import cat from "@/assets/me/cat.webp";
+import Sketch, { type SketchName } from "@/components/ui/Sketch";
 
 const STORY =
   "I'm Lucas. *Eight years* of backends: a *digital bank,* a 0‑to‑1 SaaS I led, and now *MCP tooling* at YTL AI Labs. I like the parts nobody sees. Next chapter: *Australia or New Zealand.*";
@@ -28,51 +23,22 @@ const WORDS = (() => {
   return out;
 })();
 
-const SHOTS: { img: StaticImageData; alt: string; name: string }[] = [
-  { img: desk, alt: "Illustration of Lucas coding on a laptop, with books on Go and Postgres on the desk", name: "Desk" },
-  { img: tennis, alt: "Illustration of Lucas in a cap, holding a tennis racket and a ball", name: "Court" },
-  { img: gaming, alt: "Illustration of Lucas holding a game controller under a sign that reads Good games, good mood", name: "Games" },
-  { img: cat, alt: "Illustration of Lucas hugging a grey cat under a sign that reads Small steps, big progress", name: "Cat" },
+const SHOTS: { sketch: SketchName; alt: string; name: string }[] = [
+  { sketch: "desk", alt: "Line drawing of Lucas coding on a laptop beside books on Go, Postgres and system design", name: "Desk" },
+  { sketch: "tennis", alt: "Line drawing of Lucas in a cap, holding a tennis racket and a ball", name: "Court" },
+  { sketch: "gaming", alt: "Line drawing of Lucas holding a game controller under a sign that reads Good games, good mood", name: "Games" },
+  { sketch: "cat", alt: "Line drawing of Lucas hugging his cat under a sign that reads Small steps, big progress", name: "Cat" },
 ];
 
 /** Each word goes from the faint grey to ink as the paragraph passes the middle of the screen. */
 function Word({ w, em, progress, range }: { w: string; em: boolean; progress: MotionValue<number>; range: [number, number] }) {
-  const color = useTransform(progress, range, ["#d4d4d4", "#0a0a0a"]);
+  const color = useTransform(progress, range, ["#d4d4d4", em ? "#e8590c" : "#0a0a0a"]);
   return (
     <>
       <m.span style={{ color }} className={em ? "serif-accent text-[1.08em]" : undefined}>
         {w}
       </m.span>{" "}
     </>
-  );
-}
-
-/** A print that develops: grey until it has been on screen a moment, then its colour comes up. */
-function Print({ img, alt, sizes, className = "", delay = 0, priority }: { img: StaticImageData; alt: string; sizes: string; className?: string; delay?: number; priority?: boolean }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [developed, setDeveloped] = useState(false);
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    let t = 0;
-    const io = new IntersectionObserver(
-      ([e]) => {
-        if (!e.isIntersecting) return;
-        t = window.setTimeout(() => setDeveloped(true), 500 + delay);
-        io.disconnect();
-      },
-      { threshold: 0.6 },
-    );
-    io.observe(el);
-    return () => {
-      io.disconnect();
-      window.clearTimeout(t);
-    };
-  }, [delay]);
-  return (
-    <div ref={ref} className={`photo ${className}`} data-color={developed ? "" : undefined}>
-      <Image src={img} alt={alt} fill sizes={sizes} placeholder="blur" priority={priority} className="object-cover !duration-[1400ms]" />
-    </div>
   );
 }
 
@@ -119,13 +85,9 @@ export default function About() {
 
         <InView className="grid grid-cols-4 gap-3 self-start lg:col-span-5" amount={0.3}>
           <figure className="col-span-4" style={at(0)}>
-            <Print
-              img={avatar}
-              alt="Illustration of Lucas in headphones, sipping from a mug with a code icon on it"
-              sizes="(min-width: 1024px) 420px, 92vw"
-              className="aspect-[5/4]"
-              priority
-            />
+            <div className="sketch-card sketch-hero aspect-[5/4]">
+              <Sketch name="mug" alt="Line drawing of Lucas in headphones, sipping from a mug with a code icon on it" />
+            </div>
             <figcaption className="mono-label mt-2.5 flex justify-between">
               <span>Fig 1.1 · Lucas</span>
               <span>{PROFILE.years} yrs · backend</span>
@@ -133,7 +95,9 @@ export default function About() {
           </figure>
           {SHOTS.map((s, i) => (
             <figure key={s.name} style={at(i + 1)}>
-              <Print img={s.img} alt={s.alt} sizes="(min-width: 1024px) 100px, 22vw" className="aspect-square" delay={150 * (i + 1)} />
+              <div className="sketch-card aspect-square">
+                <Sketch name={s.sketch} alt={s.alt} />
+              </div>
               <figcaption className="mono-label mt-2 truncate">
                 1.{i + 2} {s.name}
               </figcaption>
