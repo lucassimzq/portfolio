@@ -207,12 +207,11 @@ function MoodScale({ pct }: { pct: number }) {
       </div>
       <div className="relative mt-1.5 h-3 font-mono text-[9.5px] text-ink-3">
         <span className="absolute left-0">0</span>
-        {[50, 80].map((t) => (
+        {[50, 80, 95].map((t) => (
           <span key={t} className="absolute -translate-x-1/2" style={{ left: `${t}%` }}>
             {t}
           </span>
         ))}
-        <span className="absolute right-0">95 · 100</span>
       </div>
     </div>
   );
