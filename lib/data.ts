@@ -270,9 +270,11 @@ export type Project = {
   description: string;
   tags: string[];
   demoUrl?: string;
+  /** The product's own website, for projects that have one. */
+  siteUrl?: string;
   repoUrl?: string;
   caseStudy?: string;
-  /** Shown in place of links when there is nothing public to open. */
+  /** Release stage, shown as a pill beside the links. */
   status?: string;
   /** Small print under the description. */
   note?: string;
@@ -291,6 +293,7 @@ export const PROJECTS: Project[] = [
     description:
       "A keyboard-first Mac app for Postgres and SQLite, with a Rust core in a Tauri shell. Every tab stays connected, so a query is one round trip instead of four. Safe mode holds a risky write until you confirm it, and a built-in MCP server gives AI agents guarded, read-only access.",
     tags: ["Rust", "Tauri 2", "React", "PostgreSQL", "SQLite", "MCP"],
+    siteUrl: "https://inlet-db.lucascodes.dev",
     status: "Private alpha · macOS",
     chrome: { title: "InletDB · shop-eu" },
     flow: ["⌘K", "Warm tab", "1 round trip", "Safe mode"],
@@ -331,6 +334,7 @@ export const PROJECTS: Project[] = [
     description:
       "Keeps your context window, 5-hour and weekly limits in view above the Claude Code prompt, watched over by a pixel crab whose mood follows the highest one. He levels up as you work, with progress shared by every session, and a one-click update fast-forwards your clone to the newest release tag.",
     tags: ["TypeScript", "Claude Code", "SVG", "Git"],
+    siteUrl: "https://claude-usage-hud.lucascodes.dev",
     repoUrl: "https://github.com/lucassimzq/claude-usage-mod",
     note: "Unofficial fan project, not affiliated with Anthropic.",
     chrome: { title: "Claude Code · payments-api" },
