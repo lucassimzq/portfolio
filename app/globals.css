@@ -53,7 +53,8 @@ html {
 body {
   font-family: var(--font-sans);
   font-size: 16px;
-  background: var(--bg);
+  /* Transparent so the fixed backdrop (z-index -1) shows; html carries the colour. */
+  background: transparent;
   color: var(--text-1);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -483,3 +484,27 @@ html { scroll-padding-top: 76px; }
 .track-pad { padding-inline: max(16px, calc((100vw - 1320px) / 2 + 16px)); }
 @media (min-width: 640px) { .track-pad { padding-inline: max(28px, calc((100vw - 1320px) / 2 + 28px)); } }
 @media (min-width: 1024px) { .track-pad { padding-inline: max(40px, calc((100vw - 1320px) / 2 + 40px)); } }
+
+/* ── v2: backdrop (components/site/Backdrop.tsx) ────────────── */
+.backdrop-grid {
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 72px 72px;
+  -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 85%);
+  mask-image: radial-gradient(ellipse 80% 70% at 50% 40%, #000 30%, transparent 85%);
+}
+.ember {
+  position: absolute;
+  border-radius: 999px;
+  will-change: transform;
+  animation: ember-drift var(--t, 28s) ease-in-out infinite alternate;
+}
+.ember-a { --t: 26s; left: -12vw; top: 30vh; width: 62vw; height: 62vw; background: radial-gradient(closest-side, rgba(255, 106, 10, 0.11), transparent); }
+.ember-b { --t: 34s; right: -18vw; top: 85vh; width: 70vw; height: 70vw; background: radial-gradient(closest-side, rgba(255, 194, 161, 0.07), transparent); animation-direction: alternate-reverse; }
+.ember-c { --t: 40s; right: 5vw; top: 135vh; width: 48vw; height: 48vw; background: radial-gradient(closest-side, rgba(255, 106, 10, 0.08), transparent); }
+.ember-d { --t: 30s; left: 10vw; top: 190vh; width: 58vw; height: 58vw; background: radial-gradient(closest-side, rgba(170, 70, 20, 0.12), transparent); }
+@keyframes ember-drift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(6vw, -5vh, 0) scale(1.12); }
+}

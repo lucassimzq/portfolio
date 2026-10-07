@@ -1,5 +1,6 @@
 import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
+import Backdrop from "@/components/site/Backdrop";
 import Hero from "@/components/hero/Hero";
 import Marquee from "@/components/sections/Marquee";
 import About from "@/components/sections/About";
@@ -17,6 +18,7 @@ export default function Home() {
       >
         Skip to content
       </a>
+      <Backdrop />
       <Nav />
       <main id="main">
         <Hero />

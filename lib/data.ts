@@ -226,8 +226,8 @@ export const SKILLS: { cat: string; items: Skill[] }[] = [
   },
 ];
 
-// Specialties on the top row, the stack underneath, so the ticker doubles as the skills list.
-export const MARQUEE = [
+// The "Known for" band under the hero: specialties large, the everyday stack small.
+export const SPECIALTY_TAGS = [
   "Query performance",
   "Team leadership",
   "High-concurrency Go",
@@ -235,16 +235,9 @@ export const MARQUEE = [
   "Zero-downtime migrations",
   "MCP + guardrails",
   "Payments",
-  "Go",
-  "PHP · Laravel",
-  "Python",
-  "PostgreSQL",
-  "Redis",
-  "AWS",
-  "Kubernetes",
-  "Docker",
-  "CI/CD",
 ];
+
+export const STACK = ["Go", "PHP · Laravel", "Python", "PostgreSQL", "Redis", "AWS", "Kubernetes", "Docker", "CI/CD"];
 
 export type Project = {
   slug: string;
