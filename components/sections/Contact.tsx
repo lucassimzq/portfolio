@@ -1,205 +1,145 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { AnimatePresence, m, useReducedMotion } from "motion/react";
-import Reveal from "@/components/ui/Reveal";
-import Magnetic from "@/components/ui/Magnetic";
-import RelocationMap from "@/components/contact/RelocationMap";
-import { ArrowUpRight, Check, Copy, Download, Github, Linkedin } from "@/components/ui/Icons";
-import { useActive, useZonedTime } from "@/components/ui/hooks";
-import { useEmail } from "@/components/site/Email";
+import { useCallback, useState } from "react";
+import InView, { at } from "@/components/ui/InView";
+import Swap from "@/components/ui/Swap";
+import EmailPill from "@/components/site/EmailPill";
+import Sketch from "@/components/ui/Sketch";
+import { ArrowUpRight, Download, Github, Linkedin } from "@/components/ui/Icons";
+import { useZonedTime, usePrefersReducedMotion } from "@/components/ui/hooks";
 import { LINKS, PROFILE } from "@/lib/data";
-import { CITIES, HOME } from "@/lib/map";
+import { CITIES, HOME, LAND_DOTS, MAP_H, MAP_W } from "@/lib/map";
 
-/** "GMT+5:30" → minutes east of UTC */
-function offsetMinutes(label: string) {
-  const mt = /GMT([+-])(\d{1,2})(?::(\d{2}))?/.exec(label);
-  if (!mt) return 0;
-  return (mt[1] === "-" ? -1 : 1) * (Number(mt[2]) * 60 + Number(mt[3] ?? 0));
+/** The arc from home to a city: a quadratic that bows up and away, like a route on a chart. */
+function arc(x: number, y: number) {
+  const mx = (HOME.x + x) / 2, my = (HOME.y + y) / 2;
+  const dx = x - HOME.x, dy = y - HOME.y;
+  const len = Math.hypot(dx, dy);
+  const bow = len * 0.22;
+  return `M${HOME.x} ${HOME.y}Q${(mx + (dy / len) * bow).toFixed(1)} ${(my - (dx / len) * bow).toFixed(1)} ${x} ${y}`;
 }
 
-function Clock({ city, timeZone }: { city: string; timeZone: string }) {
-  const { time } = useZonedTime(timeZone);
+/** The region as grey dots, home in ink, the city and the route to it in orange, drawn in each time it changes. */
+function RouteMap({ active, onPick }: { active: number; onPick: (i: number) => void }) {
+  const city = CITIES[active];
   return (
-    <div>
-      <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">{city}</div>
-      <div className="mt-1 font-mono text-[20px] tabular-nums tracking-[-0.02em] text-ink">{time}</div>
-    </div>
-  );
-}
-
-function CopyEmail({ email }: { email: string }) {
-  const [copied, setCopied] = useState(false);
-  useEffect(() => {
-    if (!copied) return;
-    const t = window.setTimeout(() => setCopied(false), 1800);
-    return () => window.clearTimeout(t);
-  }, [copied]);
-
-  return (
-    <button
-      type="button"
-      disabled={!email}
-      onClick={() => {
-        navigator.clipboard
-          ?.writeText(email)
-          .then(() => setCopied(true))
-          .catch(() => {});
-      }}
-      className="inline-flex h-10 items-center gap-2 rounded-full border border-line-strong px-4 font-mono text-[11.5px] uppercase tracking-[0.12em] text-ink-2 transition-colors duration-300 hover:border-accent hover:text-ink"
-      aria-label={copied ? "Email address copied" : "Copy email address"}
-    >
-      {copied ? <Check size={14} className="text-ok" /> : <Copy size={14} />}
-      <span aria-live="polite">{copied ? "Copied" : "Copy"}</span>
-    </button>
+    <svg viewBox={`0 0 ${MAP_W} ${MAP_H}`} className="block h-full w-full" role="img" aria-label={`A dot map from Kuala Lumpur to ${city.name}`}>
+      <path d={LAND_DOTS} stroke="#cfcfd4" strokeWidth={6} strokeLinecap="round" fill="none" />
+      <path key={city.id} d={arc(city.x, city.y)} className="route" pathLength={1} fill="none" stroke="#ff6a0a" strokeWidth={1.4} vectorEffect="non-scaling-stroke" />
+      {CITIES.map((c, i) => (
+        <g key={c.id} onPointerEnter={() => onPick(i)} onClick={() => onPick(i)} className="cursor-pointer">
+          <circle cx={c.x} cy={c.y} r={22} fill="transparent" />
+          <circle cx={c.x} cy={c.y} r={i === active ? 7 : 5} fill={i === active ? "#ff6a0a" : "#fff"} stroke={i === active ? "#ff6a0a" : "#0a0a0a"} strokeWidth={1.4} style={{ transition: "r 200ms, fill 200ms" }} />
+        </g>
+      ))}
+      <circle cx={HOME.x} cy={HOME.y} r={7} fill="#0a0a0a" />
+      <circle cx={HOME.x} cy={HOME.y} r={14} fill="none" stroke="#0a0a0a" strokeWidth={1} opacity={0.35} />
+    </svg>
   );
 }
 
 export default function Contact() {
-  const [ref, inView] = useActive<HTMLElement>(0.2);
-  const reduced = useReducedMotion();
+  const reduced = usePrefersReducedMotion();
   const [active, setActive] = useState(0);
   const [held, setHeld] = useState(false);
-
-  // Cycle destinations while on screen; a hover or tap holds the current one for a while.
-  useEffect(() => {
-    if (!inView || reduced) return;
-    const t = window.setTimeout(
-      () => {
-        setHeld(false);
-        setActive((i) => (i + 1) % CITIES.length);
-      },
-      held ? 7000 : 2900,
-    );
-    return () => window.clearTimeout(t);
-  }, [active, held, inView, reduced]);
-
-  const email = useEmail();
   const city = CITIES[active];
   const home = useZonedTime(HOME.timeZone);
   const there = useZonedTime(city.timeZone);
-  const diff = there.offset && home.offset ? (offsetMinutes(there.offset) - offsetMinutes(home.offset)) / 60 : null;
-  const diffLabel = diff === null ? "" : diff === 0 ? "same time as KL" : `${diff > 0 ? "+" : ""}${diff} h from KL`;
+  const follow = useCallback((i: number) => setActive(i), []);
+
+  const pick = (i: number) => {
+    setActive(i);
+    setHeld(true);
+  };
 
   return (
-    <section ref={ref} id="contact" className="relative overflow-hidden py-20 md:py-28">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-[-10%] top-[20%] h-[640px] w-[640px] rounded-full bg-accent/[0.07] blur-[140px]"
-      />
-      <div className="shell relative grid gap-14 lg:grid-cols-12 lg:gap-8">
-        <div className="lg:col-span-5">
-          <Reveal y={12} className="eyebrow flex items-center gap-3">
-            <span className="text-accent">05</span>
-            <span className="h-px w-10 bg-line-strong" />
-            Contact
-          </Reveal>
+    <section id="contact" className="sec shell py-14 md:py-20">
+      <InView>
+        <p className="sec-label" style={at(0)}>
+          <span>
+            <b>05</b> · Contact
+          </span>
+        </p>
+      </InView>
 
-          <h2 className="display mt-6 text-[clamp(52px,7vw,112px)] [font-stretch:86%]">
+      <div className="mt-10 grid items-start gap-10 lg:grid-cols-12 lg:gap-12">
+        <InView className="lg:col-span-5">
+          <h2 className="hero-title !max-w-none" style={at(0)}>
             <span className="sr-only">Next stop: Australia or New Zealand.</span>
-            <span aria-hidden className="block">
-              Next stop:
-            </span>
-            <span aria-hidden className="relative block h-[1.12em] overflow-hidden">
-              <AnimatePresence initial={false}>
-                <m.span
-                  key={city.id}
-                  className="serif-accent absolute left-0 top-0 block whitespace-nowrap text-accent"
-                  initial={{ y: "105%" }}
-                  animate={{ y: "0%" }}
-                  // far enough that descenders (the y in Sydney) clear the mask too
-                  exit={{ y: "-150%" }}
-                  transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
-                >
-                  {city.name}.
-                </m.span>
-              </AnimatePresence>
+            <span aria-hidden>
+              Next stop:{" "}
+              <Swap
+                index={active}
+                onIndex={follow}
+                paused={reduced || held}
+                every={2800}
+                items={CITIES.map((c) => (
+                  <em key={c.id}>{c.name}.</em>
+                ))}
+              />
             </span>
           </h2>
-
-          <Reveal delay={0.1} className="mt-10">
-            <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">Email</div>
-            <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
-              <a
-                href={email ? `mailto:${email}` : "#contact"}
-                className="draw-underline min-h-[1.2em] text-[clamp(22px,2.4vw,34px)] font-medium tracking-[-0.025em] text-ink"
-              >
-                {email || "Email me"}
+          <p className="hero-sub" style={at(1)}>
+            Senior backend or full-stack roles. {PROFILE.workAuthShort}.
+          </p>
+          <div className="mt-7 grid gap-2" style={at(2)}>
+            <EmailPill className="max-w-[340px]" />
+            <div className="flex flex-wrap gap-2">
+              <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="btn">
+                <Linkedin size={15} /> LinkedIn
               </a>
-              <CopyEmail email={email} />
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.2} className="mt-8 flex flex-wrap gap-3">
-            <Magnetic>
-              <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-ghost">
-                <Linkedin size={16} /> LinkedIn <ArrowUpRight size={14} className="btn-icon-x" />
+              <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn">
+                <Github size={15} /> GitHub
               </a>
-            </Magnetic>
-            <Magnetic>
-              <a href={LINKS.github} target="_blank" rel="noopener noreferrer" className="btn btn-sm btn-ghost">
-                <Github size={16} /> GitHub <ArrowUpRight size={14} className="btn-icon-x" />
+              <a href={LINKS.resume} target="_blank" rel="noopener" className="btn btn-primary">
+                Résumé PDF <Download size={15} className="btn-icon" />
               </a>
-            </Magnetic>
-            <Magnetic>
-              <a href={LINKS.resume} target="_blank" rel="noopener" className="btn btn-sm btn-primary">
-                Résumé PDF <Download size={16} className="btn-icon" />
-              </a>
-            </Magnetic>
-          </Reveal>
-
-          <Reveal delay={0.25} className="mt-10 flex items-start gap-3 border-t border-line pt-6 text-[14px] leading-relaxed text-ink-3">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="mt-0.5 shrink-0 text-accent" aria-hidden>
-              <path d="M2.5 19h19M3 13.5l3.5 1.2L17 9.6c1.5-.7 3.2-.3 3.6.6.4.8-.4 1.9-1.9 2.6L8.4 17.7 4.4 16.3 3 13.5Z" />
-              <path d="m10.5 11.5-4-5 2-.8 6.3 3.2" />
-            </svg>
-            <span>{PROFILE.workAuthShort}</span>
-          </Reveal>
-        </div>
-
-        <div className="lg:col-span-7 lg:pl-6">
-          <RelocationMap
-            active={active}
-            shown={inView}
-            onPick={(i) => {
-              setActive(i);
-              setHeld(true);
-            }}
-          />
-
-          <div className="mt-6 grid grid-cols-2 gap-6 border-t border-line pt-6 sm:grid-cols-4">
-            <div className="col-span-2">
-              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">Route</div>
-              <div className="mt-1 flex items-baseline gap-3 font-mono text-[20px] tracking-[-0.02em] text-ink">
-                {HOME.code}
-                <span className="text-accent">→</span>
-                <span className="relative inline-block h-[1.2em] w-[3.2ch] overflow-hidden align-bottom">
-                  <AnimatePresence initial={false}>
-                    <m.span
-                      key={city.code}
-                      className="absolute left-0 top-0"
-                      initial={{ y: "100%", opacity: 0 }}
-                      animate={{ y: "0%", opacity: 1 }}
-                      exit={{ y: "-100%", opacity: 0 }}
-                      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                    >
-                      {city.code}
-                    </m.span>
-                  </AnimatePresence>
-                </span>
-                <span className="text-[12px] uppercase tracking-[0.12em] text-ink-3">
-                  {city.km.toLocaleString("en-US")} km
-                </span>
-              </div>
-            </div>
-            <Clock city="Kuala Lumpur" timeZone={HOME.timeZone} />
-            <div>
-              <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">{city.name}</div>
-              <div className="mt-1 font-mono text-[20px] tabular-nums tracking-[-0.02em] text-ink">{there.time}</div>
-              <div className="mt-0.5 font-mono text-[10.5px] uppercase tracking-[0.12em] text-accent">{diffLabel}</div>
             </div>
           </div>
-        </div>
+        </InView>
+
+        <InView className="grid gap-3.5 sm:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)] lg:col-span-7" amount={0.15}>
+          <figure className="plate" style={at(0)} onPointerLeave={() => setHeld(false)}>
+            <div className="relative aspect-[1000/745]">
+              <div className="plate-corner top">
+                <span>Fig 5.1</span>
+                <span>
+                  {HOME.code} → {city.code} · {city.km.toLocaleString("en-US")} km
+                </span>
+              </div>
+              <div className="absolute inset-x-3 bottom-3 top-9">
+                <RouteMap active={active} onPick={pick} />
+              </div>
+            </div>
+            <figcaption className="grid grid-cols-2 border-t border-line">
+              <div className="px-4 py-3">
+                <p className="mono-label">Kuala Lumpur</p>
+                <p className="mt-1.5 font-mono text-[17px] tabular-nums">{home.time}</p>
+              </div>
+              <div className="border-l border-line px-4 py-3">
+                <p className="mono-label">{city.name}</p>
+                <p className="mt-1.5 font-mono text-[17px] tabular-nums">{there.time}</p>
+              </div>
+            </figcaption>
+          </figure>
+          <div style={at(1)} className="hidden sm:block">
+            <article className="plate h-full">
+              <div className="sketch-card sketch-flat relative flex-1">
+                <div className="plate-corner top">
+                  <span>Fig 5.2</span>
+                  <span>KL, for now</span>
+                </div>
+                <Sketch name="skyline" alt="Line drawing of Lucas at a laptop with a coffee, the Kuala Lumpur skyline and its tower in the window behind" />
+              </div>
+              <div className="plate-foot">
+                <div className="plate-metric">Let&apos;s connect.</div>
+                <a href={LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="plate-title doc-more inline-flex items-center gap-1">
+                  Message on LinkedIn <ArrowUpRight size={12} />
+                </a>
+              </div>
+            </article>
+          </div>
+        </InView>
       </div>
     </section>
   );

@@ -41,7 +41,7 @@ function highlight(src: string) {
     const i = mt.index ?? 0;
     if (i > last) out.push(<Fragment key={`t${last}`}>{src.slice(last, i)}</Fragment>);
     const [text, comment, str, kw] = mt;
-    const cls = comment ? "text-ink-3 italic" : str ? "text-peach" : kw ? "text-accent" : "text-[#9ecbff]";
+    const cls = comment ? "text-ink-3 italic" : str ? "text-peach" : kw ? "text-accent" : "text-ink";
     out.push(
       <span key={`k${i}`} className={cls}>
         {text}
@@ -55,12 +55,12 @@ function highlight(src: string) {
 
 export function CodeBlock({ children, lang }: { children: string; lang?: string }) {
   return (
-    <figure className="my-8 overflow-hidden rounded-2xl border border-line-strong bg-[#0c0c0e]">
+    <figure className="my-8 overflow-hidden rounded-xl border border-line-strong bg-elev">
       <figcaption className="flex items-center justify-between border-b border-line px-4 py-2.5">
         <span className="flex gap-1.5" aria-hidden>
-          <span className="h-2.5 w-2.5 rounded-full bg-[#2b2b30]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#2b2b30]" />
-          <span className="h-2.5 w-2.5 rounded-full bg-[#2b2b30]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#e5e5e5]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#e5e5e5]" />
+          <span className="h-2.5 w-2.5 rounded-full bg-[#e5e5e5]" />
         </span>
         {lang && <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">{lang}</span>}
       </figcaption>
@@ -99,7 +99,7 @@ export function Table({ headers, rows }: { headers: string[]; rows: string[][] }
         </thead>
         <tbody>
           {rows.map((row, i) => (
-            <tr key={i} className="border-t border-line transition-colors duration-300 hover:bg-white/[0.02]">
+            <tr key={i} className="border-t border-line transition-colors duration-300 hover:bg-elev">
               {row.map((cell, j) => (
                 <td key={j} className={`px-4 py-3 align-top leading-relaxed ${j === 0 ? "text-ink" : "text-ink-2"}`}>
                   {cell}

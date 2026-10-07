@@ -29,8 +29,8 @@ export const LINKS = {
 
 export const NAV = [
   { id: "about", label: "About" },
-  { id: "impact", label: "Proof" },
-  { id: "experience", label: "Career" },
+  { id: "proof", label: "Proof" },
+  { id: "career", label: "Career" },
   { id: "projects", label: "Projects" },
   { id: "contact", label: "Contact" },
 ] as const;
@@ -321,6 +321,8 @@ export type Impact = {
   title: string;
   /** Set on the two results the section leads with. */
   specialty?: string;
+  /** One sentence from the résumé, for the results that get a wide plate. */
+  detail?: string;
 };
 
 export const IMPACT: Record<string, Impact> = {
@@ -331,6 +333,7 @@ export const IMPACT: Record<string, Impact> = {
     metric: "2 min → <10 s",
     title: "Heavy platform queries",
     specialty: "Performance",
+    detail: "Cut heavy platform query runtimes from around 2 minutes to under 10 seconds.",
   },
   ship: {
     id: "ship",
@@ -339,6 +342,7 @@ export const IMPACT: Record<string, Impact> = {
     metric: "Team of 5–6",
     title: "Zero to launch in ~12 months",
     specialty: "Leadership",
+    detail: "Led Skribble Learn as Lead Developer: architecture, infrastructure and mentorship for a team of 5 to 6, shipped in about 12 months.",
   },
   migration: {
     id: "migration",

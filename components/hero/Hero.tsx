@@ -1,162 +1,81 @@
 "use client";
 
-import { useEffect, useRef, useState, type CSSProperties } from "react";
-import { useInView, useReducedMotion } from "motion/react";
-import SystemMesh, { FLOWS, type Flow } from "./SystemMesh";
-import Magnetic from "@/components/ui/Magnetic";
+import { useEffect, useRef, useState } from "react";
+import AvatarRing from "./AvatarRing";
+import Swap from "@/components/ui/Swap";
+import EmailPill from "@/components/site/EmailPill";
 import Counter from "@/components/ui/Counter";
-import { ArrowDown, Download } from "@/components/ui/Icons";
-import { useActive, useZonedTime } from "@/components/ui/hooks";
-import OrgLogo from "@/components/site/OrgLogo";
-import { LINKS, ORGS, PROFILE, PROOF, type OrgId } from "@/lib/data";
+import { at } from "@/components/ui/InView";
+import { usePrefersReducedMotion } from "@/components/ui/hooks";
+import { PROFILE, PROOF } from "@/lib/data";
 
-// The headline is three claims; each one lights up its path on the system map.
-const LINES: { flow: Flow; pre: string; em: string; post: string }[] = [
-  { flow: "pay", pre: "I make ", em: "money", post: " move safely," },
-  { flow: "query", pre: "", em: "queries", post: " run fast," },
-  { flow: "agent", pre: "and ", em: "AI agents", post: " behave." },
+// The headline's three claims, one at a time: the serif word is what each one is for.
+const CLAIMS: { lead: string; word: string }[] = [
+  { lead: "money move", word: "safely" },
+  { lead: "queries run", word: "fast" },
+  { lead: "AI agents", word: "behave" },
 ];
 
-const delay = (s: number) => ({ "--d": `${s}s` }) as CSSProperties;
-
 export default function Hero() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const inView = useInView(sectionRef, { amount: 0.2 });
-  const reduced = useReducedMotion();
-  const [flow, setFlow] = useState<Flow>("pay");
-  const [pinned, setPinned] = useState(0);
-  const { time } = useZonedTime(PROFILE.timezone);
-  const [proofRef, proofOn] = useActive<HTMLUListElement>(0.6);
+  const reduced = usePrefersReducedMotion();
+  const [hover, setHover] = useState(false);
+  const stats = useRef<HTMLUListElement>(null);
+  const [counting, setCounting] = useState(false);
 
-  // Cycle through the stories; a hover pins one for a while.
   useEffect(() => {
-    if (!inView || reduced) return;
-    const t = window.setTimeout(
-      () => {
-        const i = FLOWS.findIndex((f) => f.id === flow);
-        setFlow(FLOWS[(i + 1) % FLOWS.length].id);
-        setPinned(0);
-      },
-      pinned ? 9000 : 4400,
-    );
-    return () => window.clearTimeout(t);
-  }, [flow, pinned, inView, reduced]);
-
-  const select = (f: Flow, pin: boolean) => {
-    setFlow(f);
-    if (pin) setPinned((n) => n + 1);
-  };
+    const el = stats.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => e.isIntersecting && setCounting(true), { threshold: 0.6 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <section ref={sectionRef} id="top" className="relative overflow-x-clip pt-28 sm:pt-32 lg:pt-36">
-      <div
-        aria-hidden
-        className="dot-grid pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_70%_60%_at_70%_40%,black,transparent)]"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -right-40 top-10 h-[680px] w-[680px] rounded-full bg-accent/[0.09] blur-[140px]"
-      />
-
-      <div className="shell relative grid items-center gap-14 lg:grid-cols-12 lg:gap-8">
-        <div className="relative z-10 lg:col-span-7">
-          <p className="fade-rise eyebrow flex flex-wrap items-center gap-x-3 gap-y-1" style={delay(0.05)}>
-            <span className="live-dot shrink-0 text-ok" />
-            <span className="text-ink-2">
-              Open to senior <span className="hidden sm:inline">backend &amp; full-stack </span>roles
-            </span>
-            <span className="text-ink-3">
-              · <span className="sm:hidden">AU / NZ</span>
-              <span className="hidden sm:inline">Australia / New Zealand</span>
-            </span>
-          </p>
-
-          <h1 className="display mt-7 text-[clamp(42px,4.9vw,84px)] [font-stretch:86%]">
-            {LINES.map((l, i) => {
-              const on = flow === l.flow;
-              return (
-                <span key={l.flow} className="line-mask">
-                  <span className="line-rise" style={delay(0.15 + i * 0.1)}>
-                    <span
-                      onPointerEnter={() => select(l.flow, true)}
-                      className={`transition-opacity duration-700 ${on ? "opacity-100" : "opacity-[0.42]"}`}
-                    >
-                      {l.pre}
-                      <em
-                        className={`serif-accent relative inline-block pr-[0.06em] text-[1.06em] transition-colors duration-700 ${
-                          on ? "text-accent" : ""
-                        }`}
-                      >
-                        {l.em}
-                        <span
-                          aria-hidden
-                          className={`absolute bottom-[0.08em] left-0 h-[0.05em] w-full origin-left bg-accent transition-transform duration-700 ease-expo ${
-                            on ? "scale-x-100" : "scale-x-0"
-                          }`}
-                        />
-                      </em>
-                      {l.post}
-                    </span>
-                  </span>
-                </span>
-              );
-            })}
-          </h1>
-
-          <p className="fade-rise mt-8 text-[17px] text-ink-2 sm:text-[19px]" style={delay(0.55)}>
-            <strong className="font-medium text-ink">Lucas Sim</strong>, backend engineer, {PROFILE.years} years. Now at{" "}
-            <span className="text-ink">{PROFILE.current.company}</span>.
-          </p>
-
-          <div className="fade-rise mt-10 flex flex-wrap items-center gap-3" style={delay(0.7)}>
-            <Magnetic>
-              <a href="#impact" className="btn btn-primary">
-                See the proof <ArrowDown className="btn-icon" />
-              </a>
-            </Magnetic>
-            <Magnetic>
-              <a href={LINKS.resume} target="_blank" rel="noopener" className="btn btn-ghost">
-                Résumé PDF <Download className="btn-icon" />
-              </a>
-            </Magnetic>
-          </div>
+    <section id="top" className="shell pb-16 pt-[clamp(40px,8vh,88px)] md:pb-20">
+      <div className="rise grid grid-cols-[minmax(0,1fr)] justify-items-center text-center">
+        <div style={at(0)}>
+          <AvatarRing />
         </div>
 
-        <div className="fade-rise relative lg:col-span-5 lg:-mr-4" style={delay(0.45)}>
-          <SystemMesh flow={flow} onFlow={select} />
-        </div>
-      </div>
-
-      <div className="shell relative">
-        <div className="fade-rise mt-16 border-t border-line md:mt-20" style={delay(0.95)}>
-          {/* The three numbers to leave with. */}
-          <ul ref={proofRef} className="grid grid-cols-3 divide-x divide-line">
-            {PROOF.map((p) => (
-              <li key={p.label} className="px-3 py-6 first:pl-0 last:pr-0 sm:px-6 sm:py-8 lg:px-10">
-                <div className="text-[clamp(34px,5vw,76px)] font-medium leading-[0.9] tracking-[-0.055em] text-ink [font-stretch:84%]">
-                  {p.prefix && <span className="text-ink-3">{p.prefix}</span>}
-                  {p.text ?? <Counter to={p.to} duration={1.6} play={proofOn} ease="easeOut" />}
-                  {p.suffix && <span className="text-accent">{p.suffix}</span>}
-                </div>
-                <div className="mt-3 text-[13px] leading-snug text-ink-2 sm:text-[15.5px]">{p.label}</div>
-              </li>
-            ))}
-          </ul>
-          <div className="flex flex-wrap items-center gap-x-7 gap-y-3 border-t border-line py-5">
-            <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">Shipped at</span>
-            <ul className="flex flex-wrap items-center gap-x-6 gap-y-3">
-              {(Object.keys(ORGS) as OrgId[]).map((id) => (
-                <li key={id} className="flex items-center gap-2.5 text-[14.5px] text-ink-2">
-                  <OrgLogo org={id} size={30} />
-                  {ORGS[id].name}
-                </li>
+        <h1 className="hero-title mt-7" style={at(1)} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
+          <span className="sr-only">I make money move safely, queries run fast, and AI agents behave.</span>
+          <span aria-hidden>
+            I make{" "}
+            <Swap
+              paused={reduced || hover}
+              items={CLAIMS.map((c) => (
+                <>
+                  {c.lead} <em>{c.word}</em>.
+                </>
               ))}
-            </ul>
-            <span className="font-mono text-[11.5px] uppercase tracking-[0.12em] text-ink-3 lg:ml-auto">
-              Kuala Lumpur <span className="text-ink-2">{time}</span>
-            </span>
-          </div>
+            />
+          </span>
+        </h1>
+
+        <p className="hero-sub" style={at(2)}>
+          <b>{PROFILE.name}</b>, backend engineer, {PROFILE.years} years across fintech, SaaS and AI platforms. Now{" "}
+          {PROFILE.current.role} at <b>{PROFILE.current.company}</b>.
+        </p>
+
+        <div className="mt-7 flex w-full flex-wrap items-center justify-center gap-2" style={at(3)}>
+          <EmailPill className="w-full max-w-[300px] sm:mr-1 sm:w-auto sm:flex-[0_1_300px]" />
+          <a href="#proof" className="btn btn-primary">
+            See the proof
+          </a>
         </div>
+
+        <ul ref={stats} className="stats mt-14 w-full text-left md:mt-16" style={at(4)}>
+          {PROOF.map((p) => (
+            <li key={p.label}>
+              <div className="stat-n">
+                {p.prefix && <span className="unit">{p.prefix}</span>}
+                {p.text ?? <Counter to={p.to} duration={1.4} play={counting} ease="easeOut" />}
+                {p.suffix && <span className="unit">{p.suffix}</span>}
+              </div>
+              <div className="stat-l">{p.label}</div>
+            </li>
+          ))}
+        </ul>
       </div>
     </section>
   );

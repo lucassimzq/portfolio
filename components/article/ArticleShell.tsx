@@ -59,7 +59,6 @@ export default function ArticleShell({ index, slug, title, subtitle, dek, tags, 
       </header>
 
       <main id="article" className="relative overflow-hidden pb-24 pt-32 md:pt-40">
-        <div aria-hidden className="pointer-events-none absolute -top-40 right-[-10%] h-[520px] w-[520px] rounded-full bg-accent/10 blur-[130px]" />
         <div className="shell relative">
           <div className="mx-auto max-w-[880px]">
             <Reveal y={12} className="eyebrow flex items-center gap-3">
@@ -67,7 +66,7 @@ export default function ArticleShell({ index, slug, title, subtitle, dek, tags, 
               <span className="h-px w-10 bg-line-strong" />
               {slug}
             </Reveal>
-            <SplitText as="h1" text={title} className="display mt-6 text-[clamp(42px,6.4vw,92px)] [font-stretch:88%]" stagger={0.045} />
+            <SplitText as="h1" text={title} className="display mt-6 text-[clamp(34px,5vw,56px)]" stagger={0.045} />
             {subtitle && (
               <Reveal delay={0.25} className="serif-accent mt-3 text-[clamp(24px,2.8vw,38px)] leading-tight text-ink-2">
                 {subtitle}
@@ -108,17 +107,17 @@ export default function ArticleShell({ index, slug, title, subtitle, dek, tags, 
           <Reveal className="mx-auto mt-24 max-w-[880px]">
             <Link
               href={next.href}
-              className="group relative block overflow-hidden rounded-[28px] border border-line bg-card p-8 transition-colors duration-500 hover:border-accent/50 sm:p-12"
+              className="group relative block overflow-hidden plate p-8 sm:p-10"
             >
               <span className="font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">Next case study</span>
               <span className="mt-4 flex items-end justify-between gap-6">
                 <span>
-                  <span className="block text-[clamp(30px,4vw,56px)] font-medium leading-[1] tracking-[-0.04em] text-ink [font-stretch:88%]">
+                  <span className="block text-[clamp(26px,3.2vw,40px)] font-medium leading-[1.05] tracking-[-0.035em] text-ink">
                     {next.title}
                   </span>
                   <span className="serif-accent mt-2 block text-[22px] text-ink-2">{next.kicker}</span>
                 </span>
-                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-line-strong text-ink transition-all duration-500 ease-expo group-hover:rotate-45 group-hover:border-accent group-hover:bg-accent group-hover:text-bg">
+                <span className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-line-strong text-ink transition-all duration-500 ease-expo group-hover:rotate-45 group-hover:border-accent group-hover:bg-ink group-hover:text-white">
                   <ArrowUpRight size={22} />
                 </span>
               </span>
