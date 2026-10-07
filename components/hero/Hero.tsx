@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Assembly from "./Assembly";
+import AvatarRing from "./AvatarRing";
 import Swap from "@/components/ui/Swap";
 import EmailPill from "@/components/site/EmailPill";
 import Counter from "@/components/ui/Counter";
@@ -33,12 +33,11 @@ export default function Hero() {
   return (
     <section id="top" className="shell pb-16 pt-[clamp(40px,8vh,88px)] md:pb-20">
       <div className="rise grid grid-cols-[minmax(0,1fr)] justify-items-center text-center">
-        <p className="badge" style={at(0)}>
-          <span className="badge-dot" aria-hidden />
-          Open to senior roles in Australia &amp; New Zealand
-        </p>
+        <div style={at(0)}>
+          <AvatarRing />
+        </div>
 
-        <h1 className="hero-title mt-6" style={at(1)} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
+        <h1 className="hero-title mt-7" style={at(1)} onPointerEnter={() => setHover(true)} onPointerLeave={() => setHover(false)}>
           <span className="sr-only">I make money move safely, queries run fast, and AI agents behave.</span>
           <span aria-hidden>
             I make{" "}
@@ -65,11 +64,7 @@ export default function Hero() {
           </a>
         </div>
 
-        <div className="mt-4 w-full" style={at(4)}>
-          <Assembly />
-        </div>
-
-        <ul ref={stats} className="stats mt-6 w-full text-left" style={at(5)}>
+        <ul ref={stats} className="stats mt-14 w-full text-left md:mt-16" style={at(4)}>
           {PROOF.map((p) => (
             <li key={p.label}>
               <div className="stat-n">

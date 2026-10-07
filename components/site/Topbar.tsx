@@ -6,8 +6,8 @@ import { Github } from "@/components/ui/Icons";
 import { LINKS, NAV, PROFILE } from "@/lib/data";
 
 /**
- * The bar on every page: the name home with the role beside it, a step smaller and
- * greyer, then the sections and GitHub. A dot flies to the section in view.
+ * The bar on every page, floating as a rounded pane of matte glass: the name home with
+ * the role beside it, then the sections and GitHub. A dot flies to the section in view.
  */
 export default function Topbar() {
   const [active, setActive] = useState<string | null>(null);
@@ -51,28 +51,30 @@ export default function Topbar() {
 
   return (
     <header className="topbar" data-scrolled={scrolled ? "" : undefined}>
-      <div className="flex items-baseline gap-2">
-        <Link href="/" className="relative text-[15px] font-medium tracking-[-0.02em]">
-          {PROFILE.name}
-        </Link>
-        <span className="topbar-sub">{PROFILE.role}</span>
-      </div>
-      <nav ref={nav} aria-label="Sections" className="relative flex items-center">
-        <span ref={dot} className="topbar-dot" aria-hidden />
-        {NAV.map((n) => (
-          <a
-            key={n.id}
-            href={`/#${n.id}`}
-            className={`topbar-link ${n.id === "about" ? "max-[519px]:hidden" : ""}`}
-            aria-current={active === n.id ? "location" : undefined}
-          >
-            {n.label}
+      <div className="topbar-pill">
+        <div className="flex items-baseline gap-2">
+          <Link href="/" className="relative text-[15px] font-medium tracking-[-0.02em]">
+            {PROFILE.name}
+          </Link>
+          <span className="topbar-sub">{PROFILE.role}</span>
+        </div>
+        <nav ref={nav} aria-label="Sections" className="relative flex items-center">
+          <span ref={dot} className="topbar-dot" aria-hidden />
+          {NAV.map((n) => (
+            <a
+              key={n.id}
+              href={`/#${n.id}`}
+              className={`topbar-link ${n.id === "about" ? "max-[519px]:hidden" : ""}`}
+              aria-current={active === n.id ? "location" : undefined}
+            >
+              {n.label}
+            </a>
+          ))}
+          <a className="topbar-link" href={LINKS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+            <Github size={16} />
           </a>
-        ))}
-        <a className="topbar-link" href={LINKS.github} target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-          <Github size={16} />
-        </a>
-      </nav>
+        </nav>
+      </div>
     </header>
   );
 }

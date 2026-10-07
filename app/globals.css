@@ -25,7 +25,7 @@
   --err: #dc2626;
   --warn: #ca8a04;
 
-  --topbar: 54px;
+  --topbar: 66px;
   --gutter: clamp(18px, 5vw, 28px);
   /* a card drawn by its shadow alone: a hairline ring, then two soft drops */
   --card: 0 0 0 1px #0000000f, 0 1px 2px -1px #0000000f, 0 2px 4px 0 #0000000a;
@@ -129,17 +129,28 @@ em { font-style: italic; }
   .mono-label { font: 400 11px/1 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-3); }
 
   /* ── Top bar ─────────────────────────────────────────────────── */
+  /* a rounded pane of matte glass floating over the page: frosted, faintly grained, lit along its top edge */
   .topbar {
-    position: sticky; top: 0; z-index: 40;
-    display: flex; align-items: center; justify-content: space-between;
-    height: var(--topbar);
-    padding: 0 max(var(--gutter), calc((100% - 1080px) / 2));
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    transition: box-shadow 200ms ease;
+    position: sticky; top: 0; z-index: 40; height: var(--topbar);
+    padding: 10px max(calc(var(--gutter) - 8px), calc((100% - 1080px) / 2 - 18px)) 0;
+    pointer-events: none;
   }
-  .topbar[data-scrolled] { box-shadow: 0 1px 0 var(--border); }
+  .topbar-pill {
+    position: relative; isolation: isolate; display: flex; align-items: center; justify-content: space-between;
+    height: 48px; padding: 0 8px 0 18px; border-radius: 999px; pointer-events: auto;
+    background: rgb(250 250 250 / 0.66);
+    backdrop-filter: blur(16px) saturate(1.5); -webkit-backdrop-filter: blur(16px) saturate(1.5);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 0 0 1px rgb(0 0 0 / 0.06), 0 6px 20px -12px rgb(0 0 0 / 0.16);
+    transition: box-shadow 250ms ease, background-color 250ms ease;
+  }
+  .topbar-pill::before {
+    content: ""; position: absolute; inset: 0; z-index: -1; border-radius: inherit; opacity: 0.07; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  .topbar[data-scrolled] .topbar-pill {
+    background: rgb(250 250 250 / 0.72);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.9), inset 0 0 0 1px rgb(255 255 255 / 0.5), 0 0 0 1px rgb(0 0 0 / 0.07), 0 12px 32px -14px rgb(0 0 0 / 0.24);
+  }
   .topbar-link {
     position: relative; display: inline-flex; align-items: center; height: 30px; padding: 0 10px; border-radius: 8px;
     font-size: 13px; line-height: 1; color: var(--text-3); transition: color 150ms ease;
@@ -147,7 +158,7 @@ em { font-style: italic; }
   .topbar-link::after { content: ""; position: absolute; inset: -5px 0; }
   .topbar-link[aria-current] { color: var(--text-1); }
   @media (hover: hover) { .topbar-link:hover { color: var(--text-1); } }
-  .topbar nav { margin-right: -10px; }
+  .topbar nav { margin-right: 0; }
   /* the dot that flies to the section in view */
   .topbar-dot {
     position: absolute; top: 50%; left: 0; width: 4px; height: 4px; margin-top: -2px; border-radius: 50%;
@@ -155,7 +166,7 @@ em { font-style: italic; }
     transition: translate 300ms var(--ease-out), opacity 200ms ease;
   }
   .topbar-sub { font-size: 12px; line-height: 1; color: var(--text-3); }
-  @media (max-width: 479px) { .topbar-sub { display: none; } .topbar-link { padding: 0 7px; } .topbar nav { margin-right: -7px; } }
+  @media (max-width: 479px) { .topbar-sub { display: none; } .topbar-link { padding: 0 6px; } .topbar-pill { padding: 0 6px 0 14px; } }
 
   /* ── Buttons, pills ─────────────────────────────────────────── */
   .btn {
@@ -232,38 +243,17 @@ em { font-style: italic; }
     animation-delay: calc(var(--i, 0) * 70ms);
   }
 
-  /* the open-to-work badge: a dot that breathes beside one line */
-  .badge {
-    display: inline-flex; align-items: center; gap: 10px; height: 28px; padding: 0 12px 0 11px; border-radius: 999px;
-    background: #fff; box-shadow: var(--card); font-size: 12.5px; color: var(--text-2);
-  }
-  .badge-dot { position: relative; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
-  .badge-dot::after {
-    content: ""; position: absolute; inset: -3px; border-radius: 50%; box-shadow: 0 0 0 1px var(--accent);
-    animation: ping 2.4s var(--ease-out) infinite;
-  }
-  @keyframes ping { 0% { transform: scale(0.5); opacity: 0.45; } 70%, 100% { transform: scale(1.15); opacity: 0; } }
 
-  /* ── The hero drawing (components/hero/Assembly.tsx) ───────────── */
-  .assembly { width: 100%; max-width: 760px; aspect-ratio: 760 / 400; margin: 0 auto; }
-  .assembly svg { display: block; width: 100%; height: 100%; overflow: visible; }
-  .assembly path { fill: none; stroke-width: 1; stroke-linecap: round; stroke-linejoin: round; vector-effect: non-scaling-stroke; }
-  .assembly .rule { stroke: #ebebeb; stroke-dasharray: 1 1; }
-  .assembly .dots { stroke: #d9d9d9; stroke-width: 1.6; }
-  .assembly .foot { stroke: #cfcfd4; stroke-dasharray: 1 1; }
-  .assembly .drop { fill: #f3f3f4; stroke: none; }
-  .assembly .band, .assembly .face { fill: var(--bg); }
-  .assembly .band { stroke: none; }
-  .assembly .edge { stroke: #3f3f46; stroke-width: 1.15; }
-  .assembly .part { stroke: #bdbdc2; stroke-dasharray: 1 1; }
-  .assembly .pip { stroke: #3f3f46; }
-  .assembly .lit { stroke: var(--accent); stroke-width: 1.3; stroke-dasharray: 1 1; }
-  .assembly .guide { stroke: #c4c4ca; stroke-dasharray: 2 4; }
-  .assembly .packet { fill: var(--accent); stroke: none; }
-  .assembly .tag { font: 400 10px/1 var(--font-mono); letter-spacing: 0.06em; fill: var(--text-3); text-transform: uppercase; }
-  .assembly .tick { stroke: #cfcfd4; }
-  .assembly .tag, .assembly .tick { transition: fill 200ms ease; }
-  @media (max-width: 639px) { .assembly .tag, .assembly .tick { display: none; } }
+  /* ── The hero portrait: Lucas in line art inside a slowly turning ring of words ── */
+  .avatar-ring { position: relative; width: clamp(176px, 22vw, 216px); aspect-ratio: 1; }
+  .avatar-ring-text { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; animation: turn 32s linear infinite; }
+  .avatar-ring-text text { font: 400 10.4px/1 var(--font-mono); letter-spacing: 0.14em; fill: var(--text-2); }
+  .avatar-ring-star { fill: var(--accent); }
+  .avatar-ring > .avatar-ring-face { position: absolute; top: 16%; left: 16%; width: 68%; height: 68%; }
+  @keyframes turn { to { rotate: 360deg; } }
+  @media (hover: hover) {
+    .avatar-ring:hover .avatar-ring-face { background-color: var(--accent-ink); }
+  }
 
   /* ── Proof strip under the hero ───────────────────────────── */
   .stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -285,7 +275,6 @@ em { font-style: italic; }
   @media (max-width: 639px) {
     .plate-stage { aspect-ratio: auto; padding: 30px 0 28px; }
     .plate-stage > .fig { width: min(80%, 320px); margin-inline: auto; }
-    .assembly { width: 165%; margin-left: -32.5%; }
   }
   .plate-corner {
     position: absolute; z-index: 1; display: flex; justify-content: space-between; gap: 8px; left: 14px; right: 14px;
@@ -468,5 +457,4 @@ em { font-style: italic; }
   }
   .rise > *, [data-reveal][data-shown] > *, .swap-in, .rise-once { animation-name: fade; }
   [data-reveal] > * { opacity: 1; }
-  .badge-dot::after { display: none; }
 }
