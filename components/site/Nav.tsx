@@ -22,6 +22,8 @@ export default function Nav() {
     const prev = scrollY.getPrevious() ?? 0;
     setHidden(y > prev && y > 240);
     setScrolled(y > 24);
+    // Back at the hero, no section is current.
+    if (y < 200) setActive("");
   });
 
   useEffect(() => {

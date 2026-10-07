@@ -29,6 +29,8 @@ const description =
   "Lucas Sim is a backend engineer with 8+ years building production systems across fintech, SaaS and AI platforms: Go microservices for digital banking, PHP/Laravel product platforms, and MCP tooling with agent guardrails. Open to senior roles in Australia and New Zealand.";
 
 export const metadata: Metadata = {
+  // Absolute base for the link-preview image and other metadata URLs.
+  metadataBase: new URL("https://lucascodes.dev"),
   title: {
     default: "Lucas Sim — Backend Engineer",
     template: "%s — Lucas Sim",

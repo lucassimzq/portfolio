@@ -1,12 +1,12 @@
 import Nav from "@/components/site/Nav";
 import Footer from "@/components/site/Footer";
+import Backdrop from "@/components/site/Backdrop";
 import Hero from "@/components/hero/Hero";
 import Marquee from "@/components/sections/Marquee";
 import About from "@/components/sections/About";
 import Impact from "@/components/sections/Impact";
 import Experience from "@/components/sections/Experience";
 import Projects from "@/components/sections/Projects";
-import Skills from "@/components/sections/Skills";
 import Contact from "@/components/sections/Contact";
 
 export default function Home() {
@@ -18,6 +18,7 @@ export default function Home() {
       >
         Skip to content
       </a>
+      <Backdrop />
       <Nav />
       <main id="main">
         <Hero />
@@ -26,7 +27,6 @@ export default function Home() {
         <Impact />
         <Experience />
         <Projects />
-        <Skills />
         <Contact />
       </main>
       <Footer year={new Date().getFullYear()} />

@@ -82,7 +82,7 @@ export default function Contact() {
   const diffLabel = diff === null ? "" : diff === 0 ? "same time as KL" : `${diff > 0 ? "+" : ""}${diff} h from KL`;
 
   return (
-    <section ref={ref} id="contact" className="relative overflow-hidden py-24 md:py-32">
+    <section ref={ref} id="contact" className="relative overflow-hidden py-20 md:py-28">
       <div
         aria-hidden
         className="pointer-events-none absolute right-[-10%] top-[20%] h-[640px] w-[640px] rounded-full bg-accent/[0.07] blur-[140px]"
@@ -90,7 +90,7 @@ export default function Contact() {
       <div className="shell relative grid gap-14 lg:grid-cols-12 lg:gap-8">
         <div className="lg:col-span-5">
           <Reveal y={12} className="eyebrow flex items-center gap-3">
-            <span className="text-accent">06</span>
+            <span className="text-accent">05</span>
             <span className="h-px w-10 bg-line-strong" />
             Contact
           </Reveal>
@@ -117,13 +117,7 @@ export default function Contact() {
             </span>
           </h2>
 
-          <Reveal delay={0.1} className="mt-8 max-w-[30rem] text-[17px] leading-relaxed text-ink-2">
-            I&apos;m looking for <span className="text-ink">senior backend or full‑stack roles</span>{" "}
-            in Australia or New
-            Zealand. If your team needs someone who makes money move safely and queries run fast, let&apos;s talk.
-          </Reveal>
-
-          <Reveal delay={0.15} className="mt-10">
+          <Reveal delay={0.1} className="mt-10">
             <div className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-ink-3">Email</div>
             <div className="mt-2 flex flex-wrap items-center gap-x-5 gap-y-3">
               <a
@@ -159,7 +153,7 @@ export default function Contact() {
               <path d="M2.5 19h19M3 13.5l3.5 1.2L17 9.6c1.5-.7 3.2-.3 3.6.6.4.8-.4 1.9-1.9 2.6L8.4 17.7 4.4 16.3 3 13.5Z" />
               <path d="m10.5 11.5-4-5 2-.8 6.3 3.2" />
             </svg>
-            <span>{PROFILE.workAuth}</span>
+            <span>{PROFILE.workAuthShort}</span>
           </Reveal>
         </div>
 
