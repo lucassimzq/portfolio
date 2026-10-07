@@ -1,27 +1,19 @@
 import type { Metadata, Viewport } from "next";
-import { Instrument_Sans, Instrument_Serif, JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
+import { GeistSans } from "geist/font/sans";
+import { GeistMono } from "geist/font/mono";
 import MotionProvider from "@/components/ui/MotionProvider";
 import { LINKS, PROFILE } from "@/lib/data";
 import "./globals.css";
 
-const sans = Instrument_Sans({
-  subsets: ["latin"],
-  axes: ["wdth"],
-  variable: "--font-sans-face",
-  display: "swap",
-});
-
-const serif = Instrument_Serif({
-  subsets: ["latin"],
-  weight: "400",
-  style: ["normal", "italic"],
+// Every face ships with the build (no font fetch at build time): Geist from its
+// package, the one serif word per heading from app/fonts (SIL OFL).
+const serif = localFont({
+  src: [
+    { path: "./fonts/instrument-serif-latin-400-normal.woff2", style: "normal", weight: "400" },
+    { path: "./fonts/instrument-serif-latin-400-italic.woff2", style: "italic", weight: "400" },
+  ],
   variable: "--font-serif-face",
-  display: "swap",
-});
-
-const mono = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono-face",
   display: "swap",
 });
 
@@ -67,8 +59,8 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0a0a0b",
-  colorScheme: "dark",
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 const personJsonLd = {
@@ -88,7 +80,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html
       lang="en"
       data-scroll-behavior="smooth"
-      className={`${sans.variable} ${serif.variable} ${mono.variable}`}
+      className={`${GeistSans.variable} ${GeistMono.variable} ${serif.variable}`}
     >
       <body>
         <script
@@ -96,7 +88,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           dangerouslySetInnerHTML={{ __html: JSON.stringify(personJsonLd).replace(/</g, "\\u003c") }}
         />
         <MotionProvider>{children}</MotionProvider>
-        <div className="grain" aria-hidden />
       </body>
     </html>
   );

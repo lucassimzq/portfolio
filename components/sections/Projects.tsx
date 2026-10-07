@@ -1,149 +1,171 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { m, useScroll, useTransform, type MotionValue } from "motion/react";
-import SectionHeading from "@/components/ui/SectionHeading";
-import { ArrowUpRight, Github } from "@/components/ui/Icons";
-import { spotlight, useMediaQuery } from "@/components/ui/hooks";
+import InView, { at } from "@/components/ui/InView";
+import { Figure, type FigureName } from "@/components/ui/Figure";
+import { ArrowRight, ArrowUpRight, Github } from "@/components/ui/Icons";
 import { PROJECTS, type Project } from "@/lib/data";
-import Window from "@/components/projects/Window";
-import InletPreview from "@/components/projects/InletPreview";
-import RagPreview from "@/components/projects/RagPreview";
-import TransferPreview from "@/components/projects/TransferPreview";
-import CrabPreview from "@/components/projects/CrabPreview";
 
-const PREVIEW = { inlet: InletPreview, rag: RagPreview, transfer: TransferPreview, crab: CrabPreview } as const;
-// Phones stack the preview under the copy, so each one gets the height its content needs.
-const PREVIEW_H = { inlet: "h-[500px]", rag: "h-[560px]", transfer: "h-[480px]", crab: "h-[500px]" } as const;
+/** The figure that stands for each project, and what it shows. */
+const FIGURE: Record<Project["preview"], { name: FigureName; label: string }> = {
+  inlet: { name: "exploded", label: "An app window in four layers; moving across opens the gap" },
+  rag: { name: "loupe", label: "A loupe over a ruled sheet; the pointer drags it across" },
+  transfer: { name: "slow", label: "Crates riding a belt through a gate; hovering slows the clock" },
+  crab: { name: "terminal", label: "A terminal window; the pointer's height scrolls back through its history" },
+};
 
-function ProjectCard({
-  project: p,
-  index,
-  total,
-  progress,
-  stacked,
-}: {
-  project: Project;
-  index: number;
-  total: number;
-  progress: MotionValue<number>;
-  stacked: boolean;
-}) {
-  // Earlier cards sink back and dim as the next one slides over them.
-  const end = 1 - (total - 1 - index) * 0.045;
-  const scale = useTransform(progress, [index / total, 1], [1, end]);
-  const dim = useTransform(progress, [index / total, 1], [0, (total - 1 - index) * 0.28]);
-  const Preview = PREVIEW[p.preview];
-
+function Tile({ p, n, picked, onOpen }: { p: Project; n: number; picked: boolean; onOpen: (el: HTMLButtonElement) => void }) {
+  const button = useRef<HTMLButtonElement>(null);
+  const [read, setRead] = useState("");
+  const fig = FIGURE[p.preview];
   return (
-    <div className="lg:sticky lg:top-0 lg:flex lg:h-screen lg:items-center">
-      <m.article
-        onPointerMove={spotlight}
-        style={stacked ? { scale, top: index * 28 } : undefined}
-        className="spotlight relative w-full origin-top overflow-hidden rounded-[28px] border border-line bg-card lg:h-[min(530px,calc(100vh-150px))]"
-      >
-        <div className="grid h-full grid-cols-1 lg:grid-cols-12">
-          <div className="flex flex-col p-7 sm:p-10 lg:col-span-5 lg:justify-center">
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.14em] text-ink-3">
-              <span className="text-accent">P/{String(index + 1).padStart(2, "0")}</span>
-              <span className="h-px w-6 bg-line-strong" />
-              {p.kicker}
-            </div>
-            <h3 className="mt-5 text-[clamp(34px,3.7vw,58px)] font-medium leading-[0.98] tracking-[-0.045em] text-ink [font-stretch:88%]">
+    <article className="tile flex flex-col" data-picked={picked ? "" : undefined} onClick={() => button.current && onOpen(button.current)}>
+      <div className="plate-stage">
+        <div className="plate-corner top">
+          <span>Fig 4.{n}</span>
+          <span>{p.status ? "Alpha" : p.repoUrl ? "Open source" : ""}</span>
+        </div>
+        <Figure name={fig.name} label={fig.label} onRead={setRead} />
+        <div className="plate-corner bottom" aria-hidden>
+          <span>Open</span>
+          <span className="readout">{read}</span>
+        </div>
+      </div>
+      <div className="tile-foot mt-auto">
+        <div className="min-w-0">
+          <h3 className="tile-name">
+            <button ref={button} type="button" className="text-left" aria-haspopup="dialog">
               {p.title}
-            </h3>
-            <p className="mt-4 max-w-[30rem] text-[16px] leading-relaxed text-ink-2">{p.blurb}</p>
-            {p.note && <p className="mt-2 text-[12.5px] text-ink-3">{p.note}</p>}
-            <ul className="mt-5 flex flex-wrap gap-2" aria-label="Built with">
+            </button>
+          </h3>
+          <p className="tile-kicker">{p.kicker}</p>
+        </div>
+        <ArrowRight size={15} className="shrink-0 text-ink-3" />
+      </div>
+    </article>
+  );
+}
+
+/** The project's card: a sheet from below on a phone, a card at the right on a desk. */
+function Detail({ p, open, onClose }: { p: Project | null; open: boolean; onClose: () => void }) {
+  const close = useRef<HTMLButtonElement>(null);
+  const [read, setRead] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    close.current?.focus({ preventScroll: true });
+    const key = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", key);
+    return () => window.removeEventListener("keydown", key);
+  }, [open, onClose]);
+
+  const fig = p ? FIGURE[p.preview] : null;
+  return (
+    <>
+      <div className="scrim" data-open={open ? "" : undefined} onClick={onClose} aria-hidden />
+      <aside className="drawer" data-open={open ? "" : undefined} role="dialog" aria-modal="false" aria-label={p?.title ?? "Project"}>
+        {p && fig && (
+          <div className="grid gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-[17px] font-medium leading-tight tracking-[-0.01em]">{p.title}</h3>
+                <p className="mt-1 text-[13px] text-ink-3">
+                  {p.kicker}
+                  {p.status && <> · {p.status}</>}
+                </p>
+              </div>
+              <button ref={close} type="button" className="detail-close" onClick={onClose} aria-label="Close">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" aria-hidden>
+                  <path d="M4 4l8 8M12 4l-8 8" />
+                </svg>
+              </button>
+            </div>
+            <div className="detail-stage plate-stage" key={p.slug}>
+              <Figure name={fig.name} label={fig.label} onRead={setRead} intensity={0.75} />
+              <div className="plate-corner bottom" aria-hidden>
+                <span />
+                <span className="readout">{read}</span>
+              </div>
+            </div>
+            <p className="text-[14px] leading-relaxed text-ink-2">{p.blurb}</p>
+            {p.note && <p className="text-[12.5px] text-ink-3">{p.note}</p>}
+            <ul className="flex flex-wrap gap-1.5" aria-label="Built with">
               {p.tags.map((t) => (
-                <li
-                  key={t}
-                  className="rounded-full border border-line px-3 py-1 font-mono text-[11px] uppercase tracking-[0.1em] text-ink-3"
-                >
+                <li key={t} className="tag">
                   {t}
                 </li>
               ))}
             </ul>
-            <div className="flex flex-wrap items-center gap-3 pt-8">
-              {p.caseStudy && (
-                <Link href={p.caseStudy} className="btn btn-sm btn-primary">
-                  Read the case study <ArrowUpRight className="btn-icon-x" size={16} />
-                </Link>
-              )}
+            <div className="flex flex-wrap gap-2 pt-1">
               {p.demoUrl && (
-                <a
-                  href={p.demoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-ghost"
-                  aria-label={`${p.title} ${(p.demoLabel ?? "live demo").toLowerCase()} (opens in a new tab)`}
-                >
-                  {p.demoLabel ?? "Live demo"} <ArrowUpRight className="btn-icon-x" size={16} />
+                <a href={p.demoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-primary btn-sm">
+                  {p.demoLabel ?? "Live demo"} <ArrowUpRight size={14} className="btn-icon-x" />
                 </a>
               )}
               {p.repoUrl && (
-                <a
-                  href={p.repoUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-ghost"
-                  aria-label={`${p.title} source code on GitHub (opens in a new tab)`}
-                >
-                  <Github size={16} /> Code
+                <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="btn btn-sm">
+                  <Github size={14} /> Code
                 </a>
               )}
-              {p.status && (
-                <span className="inline-flex items-center gap-2 rounded-full border border-line px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.12em] text-ink-2">
-                  <span className="live-dot text-accent" style={{ width: 6, height: 6 }} />
-                  {p.status}
-                </span>
+              {p.caseStudy && (
+                <Link href={p.caseStudy} className="btn btn-sm">
+                  Case study <ArrowRight size={14} className="btn-icon-x" />
+                </Link>
               )}
             </div>
           </div>
-
-          <div className="relative min-h-0 px-4 pb-4 sm:px-6 sm:pb-6 lg:col-span-7 lg:py-6 lg:pl-0">
-            <div
-              aria-hidden
-              className="pointer-events-none absolute -right-24 -top-24 h-[420px] w-[420px] rounded-full bg-accent/10 blur-[110px]"
-            />
-            <Window chrome={p.chrome} className={`relative ${PREVIEW_H[p.preview]} sm:h-[480px] lg:h-full`}>
-              <Preview />
-            </Window>
-          </div>
-        </div>
-        <m.div aria-hidden className="pointer-events-none absolute inset-0 bg-bg" style={{ opacity: stacked ? dim : 0 }} />
-      </m.article>
-    </div>
+        )}
+      </aside>
+    </>
   );
 }
 
 export default function Projects() {
-  const stackRef = useRef<HTMLDivElement>(null);
-  const stacked = useMediaQuery("(min-width: 1024px)");
-  const { scrollYProgress } = useScroll({ target: stackRef, offset: ["start start", "end end"] });
+  const [picked, setPicked] = useState<number | null>(null);
+  // the card keeps its project while it slides away, so its contents don't vanish mid-exit
+  const [shown, setShown] = useState<number | null>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
+
+  const onClose = () => {
+    setPicked(null);
+    opener.current?.focus({ preventScroll: true });
+  };
 
   return (
-    <section id="projects" className="relative pt-20 md:pt-28 lg:pb-16">
-      <div className="shell">
-        <SectionHeading
-          index="04"
-          label="Projects"
-          title="Making the invisible *visible.*"
-        />
-        <div ref={stackRef} className="relative flex flex-col gap-6 lg:gap-0">
-          {PROJECTS.map((p, i) => (
-            <ProjectCard
-              key={p.slug}
-              project={p}
-              index={i}
-              total={PROJECTS.length}
-              progress={scrollYProgress}
-              stacked={stacked}
+    <section id="projects" className="sec shell py-14 md:py-20">
+      <InView>
+        <p className="sec-label" style={at(0)}>
+          <span>
+            <b>04</b> · Projects
+          </span>
+        </p>
+        <h2 className="sec-h" style={at(1)}>
+          Things I&apos;ve <em>built</em>.
+        </h2>
+        <p className="sec-lede" style={at(2)}>
+          Pick one for the details.
+        </p>
+      </InView>
+
+      <InView className="mt-10 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-4" amount={0.1}>
+        {PROJECTS.map((p, i) => (
+          <div key={p.slug} style={at(i)} className="[&>.tile]:h-full">
+            <Tile
+              p={p}
+              n={i + 1}
+              picked={picked === i}
+              onOpen={(el) => {
+                opener.current = el;
+                setShown(i);
+                setPicked((cur) => (cur === i ? null : i));
+              }}
             />
-          ))}
-        </div>
-      </div>
+          </div>
+        ))}
+      </InView>
+
+      <Detail p={shown === null ? null : PROJECTS[shown]} open={picked !== null} onClose={onClose} />
     </section>
   );
 }
